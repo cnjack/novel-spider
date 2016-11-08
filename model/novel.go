@@ -13,7 +13,7 @@ type Novel struct {
 	From string `sql:"from"`
 }
 
-func (n *Novel) Add(db *gorm.DB) ( error) {
+func (n *Novel) Add(db *gorm.DB) error {
 	return db.Create(n).Error
 }
 
