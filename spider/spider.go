@@ -1,4 +1,5 @@
 package spider
+
 //
 //import (
 //	"github.com/cnjack/novel-spider/model"
@@ -25,6 +26,7 @@ type Chapter struct {
 	From  string
 	Data  string
 }
+
 //
 //type Spider interface {
 //	Name() string

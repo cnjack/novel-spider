@@ -3,7 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cnjack/novel-spider/spider"
+
+	"git.oschina.net/cnjack/novel-spider/spider"
 )
 
 func main() {
