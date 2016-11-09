@@ -1,5 +1,7 @@
 package spider
 
+import "github.com/hu17889/go_spider/core/downloader"
+
 //
 //import (
 //	"github.com/cnjack/novel-spider/model"
@@ -11,6 +13,8 @@ package spider
 //var lock = make(chan int, MaxRunningTask)
 //var StopSingle = false
 //
+var d = downloader.NewHttpDownloader()
+
 type Novel struct {
 	Title        string
 	Auth         string
