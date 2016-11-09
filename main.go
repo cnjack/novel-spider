@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	s := &spider.Snwx{}
+	s := &spider.SnwxNovel{}
 	s.Match("http://www.snwx.com/book/124/124785/")
 	resp, err := s.Gain()
 	if err != nil {

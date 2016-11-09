@@ -1,29 +1,24 @@
 package spider
 
 import (
-	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/hu17889/go_spider/core/common/request"
-	"github.com/hu17889/go_spider/core/downloader"
 )
 
-var d = downloader.NewHttpDownloader()
-
-type Snwx struct {
+type SnwxNovel struct {
 	Url    string
-	BookID int
+	BookID string
 	Data   interface{}
 }
 
-func (s *Snwx) Name() string {
+func (s *SnwxNovel) Name() string {
 	return "snwx.com"
 }
 
-func (s *Snwx) Match(urlString string) bool {
+func (s *SnwxNovel) Match(urlString string) bool {
 	s.Url = urlString
 	u, err := url.Parse(urlString)
 	if err != nil {
@@ -39,38 +34,48 @@ func (s *Snwx) Match(urlString string) bool {
 		return false
 	}
 	if len(paths) == 3 && paths[0] == "book" {
-		s.BookID, err = strconv.Atoi(paths[2])
+		s.BookID = paths[1] + "/" + paths[2]
 		if err != nil {
 			return false
 		}
 		return true
 	}
-
-	if len(paths) == 2 && paths[0] == "txt" {
-		s.BookID, err = strconv.Atoi(paths[1])
-		if err != nil {
-			return false
-		}
-		return true
-	}
-	fmt.Println(paths)
 	return false
 }
 
-func (snwx *Snwx) Gain() (interface{}, error) {
-	urlString := "http://www.snwx.com/txt/" + strconv.Itoa(snwx.BookID) + ".html"
+func (snwx *SnwxNovel) Gain() (interface{}, error) {
+	urlString := "http://www.snwx.com/book/" + snwx.BookID + "/"
 	page := d.Download(request.NewRequest(urlString, "html", "", "GET", "", nil, nil, nil, nil))
 	doc := page.GetHtmlParser()
 	var novel Novel
-	novel.Title = strings.TrimRight(doc.Find("title").Text(), "TXT下载")
-	doc.Find("#Chapters ul li").Each(func(i int, s *goquery.Selection) {
+	novel.Title = doc.Find("div .infotitle h1").Text()
+	doc.Find("div .infotitle i1").Each(func(i int, s *goquery.Selection) {
+		ss := strings.Split(s.Text(), "：")
+		if len(ss) == 2 && i == 0 {
+			novel.Auth = ss[1]
+		}
+		if len(ss) == 2 && i == 1 {
+			novel.Style = s.Text()
+		}
+	})
+
+	is := strings.Split(doc.Find(".intro").Text(), "：")
+	if len(is) == 3 {
+		iss := strings.Split(is[1], "\n")
+		if len(iss) > 1 {
+			novel.Introduction = iss[0] + iss[1]
+		}
+	}
+
+	doc.Find("div#list dl dd").Each(func(i int, s *goquery.Selection) {
 		cp := &Chapter{}
 		cp.Title = s.Find("a").Text()
+
 		from, b := s.Find("a").Attr("href")
 		if !b {
 			return
 		}
-		cp.From = from
+		cp.From = urlString + from
 		novel.Chapter = append(novel.Chapter, cp)
 	})
 	return novel, nil
