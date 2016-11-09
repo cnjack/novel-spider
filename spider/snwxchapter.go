@@ -1,14 +1,16 @@
 package spider
 
 import (
-	"strings"
+	"errors"
 	"net/url"
+	"strings"
+
+	"github.com/hu17889/go_spider/core/common/request"
 )
 
 type SnwxChapter struct {
-	Url    string
-	BookID string
-	Data   interface{}
+	Url  string
+	Data interface{}
 }
 
 func (s *SnwxChapter) Name() string {
@@ -27,20 +29,22 @@ func (s *SnwxChapter) Match(urlString string) bool {
 	u.Path = strings.TrimRight(u.Path, ".html")
 	u.Path = strings.Trim(u.Path, `/`)
 	paths := strings.Split(u.Path, `/`)
-	if len(paths) == 0 {
+	if len(paths) != 3 {
 		return false
 	}
-	if len(paths) == 3 && paths[0] == "book" {
-		s.BookID = paths[1] + "/" + paths[2]
-		if err != nil {
-			return false
-		}
-		return true
-	}
 	return false
-	return true
 }
 
 func (s *SnwxChapter) Gain() (interface{}, error) {
-	return nil, nil
+	page := d.Download(request.NewRequest(s.Url, "html", "", "GET", "", nil, nil, nil, nil))
+	if page.Errormsg() != "" {
+		return "", errors.New(page.Errormsg())
+	}
+	doc := page.GetHtmlParser()
+	//return doc.Find("div#BookText").Text(), nil
+	html, err := doc.Find("div#BookText").Html()
+	if err != nil {
+		return "", nil
+	}
+	return html, nil
 }

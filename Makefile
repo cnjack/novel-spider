@@ -1,4 +1,8 @@
 fmt:
-	goimports -w -l .
+	goimports -w -l ./model
+	goimports -w -l ./spider
+	goimports -w -l ./tool
+	goimports -w -l ./handler
+	goimports -w -l ./main.go
 up_vendor:
 	govendor

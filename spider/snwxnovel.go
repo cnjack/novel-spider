@@ -1,6 +1,7 @@
 package spider
 
 import (
+	"errors"
 	"net/url"
 	"strings"
 
@@ -46,6 +47,9 @@ func (s *SnwxNovel) Match(urlString string) bool {
 func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	urlString := "http://www.snwx.com/book/" + snwx.BookID + "/"
 	page := d.Download(request.NewRequest(urlString, "html", "", "GET", "", nil, nil, nil, nil))
+	if page.Errormsg() != "" {
+		return "", errors.New(page.Errormsg())
+	}
 	doc := page.GetHtmlParser()
 	var novel Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
