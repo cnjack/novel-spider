@@ -4,5 +4,6 @@ fmt:
 	goimports -w -l ./tool
 	goimports -w -l ./handler
 	goimports -w -l ./main.go
-up_vendor:
-	govendor
+update:
+	govendor add +e
+	govendor remove +u
