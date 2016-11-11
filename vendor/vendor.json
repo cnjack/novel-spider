@@ -21,6 +21,13 @@
 			"revisionTime": "2015-03-31T16:46:03Z"
 		},
 		{
+			"checksumSHA1": "Lf3uUXTkKK5DJ37BxQvxO1Fq+K8=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "976c720a22c8eb4eb6a0b4348ad85ad12491a506",
+			"revisionTime": "2016-09-25T22:06:09Z"
+		},
+		{
 			"checksumSHA1": "baZXCUNG6gddcm21F5BrnObw7j4=",
 			"path": "github.com/hu17889/go_spider/core/common/mlog",
 			"revision": "85ede20bf88b6861235d89765dacbc732695ab59",
@@ -79,6 +86,19 @@
 			"path": "github.com/mattn/go-sqlite3",
 			"revision": "86681de00adef4f8040947b7d35f97000fc5a230",
 			"revisionTime": "2016-10-28T14:22:18Z"
+		},
+		{
+			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "976c720a22c8eb4eb6a0b4348ad85ad12491a506",
+			"revisionTime": "2016-09-25T22:06:09Z"
+		},
+		{
+			"checksumSHA1": "Q2V7Zs3diLmLfmfbiuLpSxETSuY=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "976c720a22c8eb4eb6a0b4348ad85ad12491a506",
+			"revisionTime": "2016-09-25T22:06:09Z"
 		},
 		{
 			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
