@@ -31,6 +31,12 @@ type Chapter struct {
 	Data  string
 }
 
+type Search struct {
+	Name       string
+	SearchName string
+	From       string
+}
+
 //
 //type Spider interface {
 //	Name() string

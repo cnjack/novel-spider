@@ -53,7 +53,7 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	doc := page.GetHtmlParser()
 	var novel Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
-	doc.Find("div .infotitle i1").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".infotitle i").Each(func(i int, s *goquery.Selection) {
 		ss := strings.Split(s.Text(), "：")
 		if len(ss) == 2 && i == 0 {
 			novel.Auth = ss[1]
@@ -62,12 +62,15 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 			novel.Style = s.Text()
 		}
 	})
-
-	is := strings.Split(doc.Find(".intro").Text(), "：")
-	if len(is) == 3 {
-		iss := strings.Split(is[1], "\n")
-		if len(iss) > 1 {
-			novel.Introduction = iss[0] + iss[1]
+	introString, err := doc.Find(".intro").Html()
+	if err != nil {
+		return nil, err
+	}
+	is := strings.Split(introString, "：")
+	if len(is) > 1 {
+		iss := strings.Split(is[1], "<br>")
+		if len(iss) > 0 {
+			novel.Introduction = iss[0]
 		}
 	}
 

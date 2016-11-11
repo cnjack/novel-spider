@@ -29,8 +29,11 @@ func (s *SnwxChapter) Match(urlString string) bool {
 	u.Path = strings.TrimRight(u.Path, ".html")
 	u.Path = strings.Trim(u.Path, `/`)
 	paths := strings.Split(u.Path, `/`)
-	if len(paths) != 3 {
+	if len(paths) != 4 {
 		return false
+	}
+	if paths[0] == "book" {
+		return true
 	}
 	return false
 }
