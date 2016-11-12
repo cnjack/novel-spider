@@ -1,11 +1,11 @@
 package spider
 
 import (
-	"errors"
 	"fmt"
+	"net/url"
 
+	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/hu17889/go_spider/core/common/request"
 )
 
 var filter = SnwxNovel{}
@@ -25,12 +25,15 @@ func (s *SnwxSearch) Match(name string) bool {
 }
 
 func (s *SnwxSearch) Gain() (interface{}, error) {
-	url := fmt.Sprintf("http://zhannei.baidu.com/cse/search?q=%s&click=1&s=5516249222499057291&nsid=", s.NovelName)
-	page := d.Download(request.NewRequest(url, "html", "", "GET", "", nil, nil, nil, nil))
-	if page.Errormsg() != "" {
-		return "", errors.New(page.Errormsg())
+	u, _ := url.Parse(fmt.Sprintf("http://zhannei.baidu.com/cse/search?q=%s&click=1&s=5516249222499057291&nsid=", s.NovelName))
+	d := downloader.NewHttpDownloaderFromUrl(u).Download()
+	if err := d.Error(); err != nil {
+		return "", err
 	}
-	doc := page.GetHtmlParser()
+	doc, err := d.Resource().Document()
+	if err != nil {
+		return "", err
+	}
 	var searchs = []*Search{}
 	doc.Find(".result").Each(func(i int, selection *goquery.Selection) {
 		var b bool
