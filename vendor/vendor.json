@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "aiS+SYIDvh6Hl1Z/NPnfEnAhqOE=",
+			"path": "git.oschina.net/cnjack/downloader",
+			"revision": "e7035bfd69608ef0a18469a901a05fce3a13e856",
+			"revisionTime": "2016-11-12T15:59:53Z"
+		},
+		{
 			"checksumSHA1": "mxzGnlbADhIl68jAQPwKm+M1i/A=",
 			"path": "github.com/PuerkitoBio/goquery",
 			"revision": "152b1a2c8f5d0340f658bb656032a39b94e52958",

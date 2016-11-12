@@ -1,15 +1,14 @@
 package spider
 
 import (
-	"errors"
 	"net/url"
 	"strings"
 
-	"github.com/hu17889/go_spider/core/common/request"
+	"git.oschina.net/cnjack/downloader"
 )
 
 type SnwxChapter struct {
-	Url  string
+	Url  *url.URL
 	Data interface{}
 }
 
@@ -18,17 +17,17 @@ func (s *SnwxChapter) Name() string {
 }
 
 func (s *SnwxChapter) Match(urlString string) bool {
-	s.Url = urlString
 	u, err := url.Parse(urlString)
+	s.Url = u
 	if err != nil {
 		return false
 	}
 	if u.Host != "www.snwx.com" {
 		return false
 	}
-	u.Path = strings.TrimRight(u.Path, ".html")
-	u.Path = strings.Trim(u.Path, `/`)
-	paths := strings.Split(u.Path, `/`)
+	path := strings.TrimRight(u.Path, ".html")
+	path = strings.Trim(path, `/`)
+	paths := strings.Split(path, `/`)
 	if len(paths) != 4 {
 		return false
 	}
@@ -39,12 +38,14 @@ func (s *SnwxChapter) Match(urlString string) bool {
 }
 
 func (s *SnwxChapter) Gain() (interface{}, error) {
-	page := d.Download(request.NewRequest(s.Url, "html", "", "GET", "", nil, nil, nil, nil))
-	if page.Errormsg() != "" {
-		return "", errors.New(page.Errormsg())
+	d := downloader.NewHttpDownloaderFromUrl(s.Url).Download()
+	if err := d.Error(); err != nil {
+		return "", err
 	}
-	doc := page.GetHtmlParser()
-	//return doc.Find("div#BookText").Text(), nil
+	doc, err := d.Resource().Document()
+	if err != nil {
+		return "", err
+	}
 	html, err := doc.Find("div#BookText").Html()
 	if err != nil {
 		return "", nil

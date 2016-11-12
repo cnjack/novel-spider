@@ -1,16 +1,15 @@
 package spider
 
 import (
-	"errors"
 	"net/url"
 	"strings"
 
+	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/hu17889/go_spider/core/common/request"
 )
 
 type SnwxNovel struct {
-	Url    string
+	Url    *url.URL
 	BookID string
 	Data   interface{}
 }
@@ -20,17 +19,17 @@ func (s *SnwxNovel) Name() string {
 }
 
 func (s *SnwxNovel) Match(urlString string) bool {
-	s.Url = urlString
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return false
 	}
+	s.Url = u
 	if u.Host != "www.snwx.com" {
 		return false
 	}
-	u.Path = strings.TrimRight(u.Path, ".html")
-	u.Path = strings.Trim(u.Path, `/`)
-	paths := strings.Split(u.Path, `/`)
+	path := strings.TrimRight(u.Path, ".html")
+	path = strings.Trim(path, `/`)
+	paths := strings.Split(path, `/`)
 	if len(paths) == 0 {
 		return false
 	}
@@ -45,12 +44,15 @@ func (s *SnwxNovel) Match(urlString string) bool {
 }
 
 func (snwx *SnwxNovel) Gain() (interface{}, error) {
-	urlString := "http://www.snwx.com/book/" + snwx.BookID + "/"
-	page := d.Download(request.NewRequest(urlString, "html", "", "GET", "", nil, nil, nil, nil))
-	if page.Errormsg() != "" {
-		return "", errors.New(page.Errormsg())
+	u, _ := url.Parse("http://www.snwx.com/book/" + snwx.BookID + "/")
+	d := downloader.NewHttpDownloaderFromUrl(u).Download()
+	if err := d.Error(); err != nil {
+		return "", err
 	}
-	doc := page.GetHtmlParser()
+	doc, err := d.Resource().Document()
+	if err != nil {
+		return "", err
+	}
 	var novel Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
 	doc.Find(".infotitle i").Each(func(i int, s *goquery.Selection) {
@@ -82,7 +84,7 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 		if !b {
 			return
 		}
-		cp.From = urlString + from
+		cp.From = u.String() + from
 		novel.Chapter = append(novel.Chapter, cp)
 	})
 	return novel, nil
