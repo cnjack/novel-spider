@@ -26,6 +26,8 @@ func TestSnwxNovel_Gain(t *testing.T) {
 		assert.NotNil(t, novel)
 		assert.Equal(t, "柳江南", novelStruct.Auth)
 		assert.Equal(t, "校园绝品狂徒", novelStruct.Title)
+		assert.Equal(t, "其他小说", novelStruct.Style)
+		assert.Equal(t, "连载中", novelStruct.Status)
 		assert.NotEmpty(t, novelStruct.Introduction)
 		assert.NotNil(t, novelStruct.Chapter)
 	}

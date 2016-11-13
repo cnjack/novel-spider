@@ -4,13 +4,40 @@ import "github.com/jinzhu/gorm"
 
 type Novel struct {
 	gorm.Model
-	Title        string `sql:"title"`
-	Auth         string `sql:"auth"`
-	Style        string `sql:"style"`
-	Status       int    `sql:"status"`
-	Introduction string `sql:"introduction"`
+	Title        string      `sql:"title"`
+	Auth         string      `sql:"auth"`
+	Style        string      `sql:"style"`
+	Status       NovelStatus `sql:"status"`
+	Introduction string      `sql:"introduction" gorm:"type:text"`
+	Chapter      string      `sql:"chapter" gorm:"type:longtext"`
+	Url          string      `sql:"url"`
+}
 
-	From string `sql:"from"`
+type NovelStatus uint8
+
+const (
+	NovelSerializing NovelStatus = iota
+	NovelCompleted
+)
+
+func String2NovelStatus(statusString string) NovelStatus {
+	if statusString == "连载中" {
+		return NovelSerializing
+	}
+	if statusString == "已完成" {
+		return NovelCompleted
+	}
+	return NovelCompleted
+}
+
+func (s NovelStatus) Tostring() string {
+	switch s {
+	case NovelSerializing:
+		return "连载中"
+	case NovelCompleted:
+		return "已完成"
+	}
+	return "未知"
 }
 
 func (n *Novel) Add(db *gorm.DB) error {

@@ -55,13 +55,19 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	}
 	var novel Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
+	novel.From = u.String()
 	doc.Find(".infotitle i").Each(func(i int, s *goquery.Selection) {
 		ss := strings.Split(s.Text(), "：")
+		strings.Trim(ss[1], " ")
+		sss := ss[1]
 		if len(ss) == 2 && i == 0 {
-			novel.Auth = ss[1]
+			novel.Auth = sss
 		}
 		if len(ss) == 2 && i == 1 {
-			novel.Style = s.Text()
+			novel.Style = sss
+		}
+		if len(ss) == 2 && i == 2 {
+			novel.Status = sss
 		}
 	})
 	introString, err := doc.Find(".intro").Html()
@@ -79,7 +85,7 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	doc.Find("div#list dl dd").Each(func(i int, s *goquery.Selection) {
 		cp := &Chapter{}
 		cp.Title = s.Find("a").Text()
-
+		cp.Index = uint(i)
 		from, b := s.Find("a").Attr("href")
 		if !b {
 			return
