@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 var db *gorm.DB
@@ -23,6 +23,7 @@ var defaultPageOption = &PageOption{
 
 func MustGetDB() (*gorm.DB, error) {
 	if db != nil {
+		db.LogMode(true)
 		return db, nil
 	}
 	return Connect()
@@ -30,7 +31,7 @@ func MustGetDB() (*gorm.DB, error) {
 
 func Connect() (*gorm.DB, error) {
 	var err error
-	db, err = gorm.Open("sqlite3", "data.db?_txlock=exclusive")
+	db, err = gorm.Open("mysql", "root:root@tcp(localhost:3306)/novel?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		return nil, err
 	}
@@ -39,11 +40,8 @@ func Connect() (*gorm.DB, error) {
 
 func InitDB() error {
 	tx := db.Begin()
+	tx.LogMode(true)
 	if err := tx.CreateTable(&Novel{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.CreateTable(&Task{}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -51,9 +49,16 @@ func InitDB() error {
 		tx.Rollback()
 		return err
 	}
+	if err := tx.CreateTable(&Task{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
 	return tx.Commit().Error
 }
 
 func init() {
-	Connect()
+	_, err := Connect()
+	if err != nil {
+		panic(err)
+	}
 }

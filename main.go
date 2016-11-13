@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+
+	"git.oschina.net/cnjack/novel-spider/spider"
 )
 
 func main() {
-	fmt.Println("testing")
+	fmt.Println("serv running")
+	spider.Run()
 }

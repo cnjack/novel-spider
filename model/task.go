@@ -4,25 +4,25 @@ import "github.com/jinzhu/gorm"
 
 type Task struct {
 	gorm.Model
-	Type        TaskType   `sql:"type"`
+	TType       TaskType   `sql:"ttype"`
 	Url         string     `sql:"url"`
 	Status      TaskStatus `sql:"status"`
 	Times       int        `sql:"times"`
-	TargetID    int64      `sql:"target_id"`
+	TargetID    uint       `sql:"target_id"`
 	TargetField string     `sql:"targetfield"`
 }
 
-type TaskType int64
+type TaskType uint8
 
 const (
 	NovelTask TaskType = iota
 	ChapterTask
 )
 
-type TaskStatus int64
+type TaskStatus uint8
 
 const (
-	TaskStatusPrepare TaskType = iota
+	TaskStatusPrepare TaskStatus = iota
 	TaskStatusRunning
 	TaskStatusFail
 	TaskStatusOk
@@ -39,6 +39,6 @@ func FisrtTask(db *gorm.DB) (*Task, error) {
 	return t, nil
 }
 
-func (t *Task) ChangeTaskStatus(tt TaskType) error {
+func (t *Task) ChangeTaskStatus(tt TaskStatus) error {
 	return db.Model(&Task{}).Where("id = ?", t.ID).Updates(map[string]interface{}{"status": tt}).Error
 }
