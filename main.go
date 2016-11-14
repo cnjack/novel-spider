@@ -8,7 +8,7 @@ import (
 
 func main() {
 	fmt.Println("serv running")
-	//go engine.Spider()
+	go engine.Spider()
 
 	engine.Http()
 }
