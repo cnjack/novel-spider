@@ -18,7 +18,7 @@ var w = sync.WaitGroup{}
 var StopSingle = false
 var spiders []spider.Spider
 
-func Run() {
+func Spider() {
 	for i := 0; i < MaxRunningTask; i++ {
 		w.Add(1)
 		go RunATask()
