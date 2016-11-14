@@ -30,6 +30,34 @@ func getNovelDetails(c echo.Context) error {
 	})
 }
 
+func getNovels(c echo.Context) error {
+	db, err := model.MustGetDB()
+	if err != nil {
+		return ServerError
+	}
+	op := c.Get(PageOptionKey).(*model.PageOption)
+	novels, err := model.FindNovels(db, op)
+	if err != nil {
+		return ServerError
+	}
+	if novels == nil {
+		return RecodeNotFound
+	}
+	var data = []interface{}{}
+	for _, v := range novels {
+		data = append(data, v.Todata())
+	}
+	nextPage := 0
+	if len(novels) >= op.Count {
+		nextPage = op.Page + 1
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code": 0,
+		"next": nextPage,
+		"data": data,
+	})
+}
+
 func getNovelChapters(c echo.Context) error {
 	idString := c.Param("id")
 	id, err := strconv.Atoi(idString)

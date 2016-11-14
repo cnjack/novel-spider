@@ -68,11 +68,21 @@ func FirstNovelByID(db *gorm.DB, id uint) (n *Novel, err error) {
 	return
 }
 
-func FindNovelByAuth(db *gorm.DB, auth string, op *PageOption) (ns []*Novel, err error) {
+func FindNovelByAuth(db *gorm.DB, auth string, op *PageOption) (ns []Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
 	}
-	if err = db.Model(&Novel{}).Where("auth = ?", auth).Order(op.OrderBy).Limit(op.Count).Offset(op.Page * op.Count).Find(ns).Error; err != nil {
+	if err = db.Model(&Novel{}).Where("auth = ?", auth).Order("id " + op.Sort).Limit(op.Count).Offset(op.Page * op.Count).Find(&ns).Error; err != nil {
+		return nil, err
+	}
+	return
+}
+
+func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel,err error) {
+	if op == nil {
+		op = defaultPageOption
+	}
+	if err = db.Model(&Novel{}).Order("id " + op.Sort).Limit(op.Count).Offset(op.Page * op.Count).Find(&ns).Error; err != nil {
 		return nil, err
 	}
 	return
