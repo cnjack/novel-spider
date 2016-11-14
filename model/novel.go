@@ -1,16 +1,20 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"encoding/json"
+	"github.com/jinzhu/gorm"
+	"time"
+)
 
 type Novel struct {
 	gorm.Model
-	Title        string      `sql:"title"`
-	Auth         string      `sql:"auth"`
-	Style        string      `sql:"style"`
-	Status       NovelStatus `sql:"status"`
-	Introduction string      `sql:"introduction" gorm:"type:text"`
-	Chapter      string      `sql:"chapter" gorm:"type:longtext"`
-	Url          string      `sql:"url"`
+	Title        string      `sql:"title" json:"title"`
+	Auth         string      `sql:"auth" json:"auth"`
+	Style        string      `sql:"style" json:"style"`
+	Status       NovelStatus `sql:"status" json:"status"`
+	Introduction string      `sql:"introduction" gorm:"type:text" json:"intrduction"`
+	Chapter      string      `sql:"chapter" gorm:"type:longtext" json:"-"`
+	Url          string      `sql:"url" json:"from"`
 }
 
 type NovelStatus uint8
@@ -48,6 +52,22 @@ func (user *Novel) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+func CountNovel() (count int, err error) {
+	err = db.Model(&Novel{}).Count(&count).Error
+	return
+}
+
+func FirstNovelByID(db *gorm.DB, id uint) (n *Novel, err error) {
+	n = &Novel{}
+	if err = db.Model(n).Where("id = ?", id).First(n).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return
+}
+
 func FindNovelByAuth(db *gorm.DB, auth string, op *PageOption) (ns []*Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
@@ -56,4 +76,36 @@ func FindNovelByAuth(db *gorm.DB, auth string, op *PageOption) (ns []*Novel, err
 		return nil, err
 	}
 	return
+}
+
+func (n *Novel) Todata() interface{} {
+	resp := map[string]interface{}{
+		"id":           n.ID,
+		"create_at":    n.CreatedAt.Format(time.RFC3339),
+		"title":        n.Title,
+		"auth":         n.Auth,
+		"style":        n.Style,
+		"status":       n.Status,
+		"introduction": n.Introduction,
+		"url":          n.Url,
+	}
+	return resp
+}
+
+type NovelChapter struct {
+	Title     string `json:"title"`
+	Index     uint   `json:"index"`
+	ChapterID uint   `json:"chapter_id"`
+	Url       string `json:"url"`
+}
+
+func (n *Novel) ChapterTodata() interface{} {
+	novelChapters := []NovelChapter{}
+	if n.Chapter != "" {
+		err := json.Unmarshal([]byte(n.Chapter), &novelChapters)
+		if err != nil {
+			return err
+		}
+	}
+	return novelChapters
 }

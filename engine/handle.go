@@ -6,6 +6,21 @@ import (
 	"github.com/labstack/echo"
 )
 
-func IndexHandle(c echo.Context) error {
+func WarpRouter(g *echo.Group) {
+	g.GET("/", indexHandle)
+	g.GET("/status", getStatus)
+	g.GET("/novel/:id", getNovelDetails)
+	g.GET("/novel/:id/chapters", getNovelChapters)
+	g.GET("/chapter/:id", getChapter)
+}
+
+func indexHandle(c echo.Context) error {
 	return c.String(http.StatusOK, "")
+}
+
+func getStatus(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code": 0,
+		"data": status,
+	})
 }

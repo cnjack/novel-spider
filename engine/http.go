@@ -4,6 +4,11 @@ import (
 	"git.oschina.net/cnjack/novel-spider/config"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"time"
+)
+
+var (
+	startTime time.Time = time.Now()
 )
 
 func Http() {
@@ -16,10 +21,15 @@ func Http() {
 	e.Use(middleware.Logger())
 
 	e.Static("/", config.GetHttpConfig().StaticPath)
-	e.GET("/", IndexHandle)
+	v1 := e.Group("v1")
+	WarpRouter(v1)
 
 	port := config.GetHttpConfig().Port
 	if err := e.Start(port); err != nil {
 		e.Logger.Fatal(err.Error())
 	}
+}
+
+func init() {
+	ReloadStatus()
 }
