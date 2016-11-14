@@ -8,18 +8,20 @@ import (
 	"sync"
 	"time"
 
+	"git.oschina.net/cnjack/novel-spider/config"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/jinzhu/gorm"
 )
 
-var MaxRunningTask = 50 //最大线程数
 var w = sync.WaitGroup{}
-var StopSingle = false
 var spiders []spider.Spider
 
 func Spider() {
-	for i := 0; i < MaxRunningTask; i++ {
+	if config.GetSpiderConfig().StopSingle {
+		return
+	}
+	for i := 0; i < config.GetSpiderConfig().MaxProcess; i++ {
 		w.Add(1)
 		go RunATask()
 	}
@@ -30,7 +32,7 @@ func RunATask() {
 	defer func() {
 		w.Done()
 	}()
-	initTask()
+
 	t, err := getTask()
 	if err != nil {
 		log.Printf("ERROR: Gain Task ERROR; ERRstring: %s", err.Error())
@@ -39,7 +41,7 @@ func RunATask() {
 	}
 	log.Printf("INFO: getTask ok; task id: %d", t.ID)
 	runTask(t)
-	if StopSingle {
+	if config.GetSpiderConfig().StopSingle {
 		return
 	}
 	RunATask()
@@ -65,10 +67,6 @@ func runTask(t *model.Task) error {
 		return nil
 	}
 	return errors.New("have not match spider")
-}
-
-func initTask() {
-
 }
 
 func flashTask(t *model.Task, data interface{}) (err error) {

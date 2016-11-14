@@ -1,6 +1,7 @@
 package model
 
 import (
+	"git.oschina.net/cnjack/novel-spider/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -30,7 +31,8 @@ func MustGetDB() (*gorm.DB, error) {
 
 func Connect() (*gorm.DB, error) {
 	var err error
-	db, err = gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/novel?charset=utf8&parseTime=True&loc=Local")
+
+	db, err = gorm.Open("mysql", config.GetMysqlConfig().DSN)
 	if err != nil {
 		return nil, err
 	}
