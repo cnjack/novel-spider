@@ -39,6 +39,11 @@ func FisrtTask(db *gorm.DB) (*Task, error) {
 	return t, nil
 }
 
+func CountTasks(t ...TaskStatus) (count int, err error) {
+	err = db.Model(&Task{}).Where("status in (?)", t).Count(&count).Error
+	return
+}
+
 func (t *Task) ChangeTaskStatus(tt TaskStatus) error {
 	return db.Model(&Task{}).Where("id = ?", t.ID).Updates(map[string]interface{}{"status": tt}).Error
 }
