@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"git.oschina.net/cnjack/novel-spider/spider"
+	"git.oschina.net/cnjack/novel-spider/engine"
 )
 
 func main() {
 	fmt.Println("serv running")
-	spider.Run()
+	engine.Run()
 }

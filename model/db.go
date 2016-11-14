@@ -23,7 +23,6 @@ var defaultPageOption = &PageOption{
 
 func MustGetDB() (*gorm.DB, error) {
 	if db != nil {
-		db.LogMode(true)
 		return db, nil
 	}
 	return Connect()
@@ -31,7 +30,7 @@ func MustGetDB() (*gorm.DB, error) {
 
 func Connect() (*gorm.DB, error) {
 	var err error
-	db, err = gorm.Open("mysql", "root:root@tcp(localhost:3306)/novel?charset=utf8&parseTime=True&loc=Local")
+	db, err = gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/novel?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		return nil, err
 	}
