@@ -12,14 +12,14 @@ type PageOption struct {
 	Page    int
 	Count   int
 	All     bool
-	OrderBy string
+	Sort string
 }
 
 var defaultPageOption = &PageOption{
 	Page:    0,
 	Count:   25,
 	All:     false,
-	OrderBy: "id desc",
+	Sort: "desc",
 }
 
 func MustGetDB() (*gorm.DB, error) {
