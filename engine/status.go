@@ -18,25 +18,24 @@ type Status struct {
 	SystemStatus      interface{} `json:"system_status"`
 }
 
-var status = &Status{}
+var status = Status{}
 
-type Statuss []*Status
-
-func appendStatus(ss []*Status, s *Status) []*Status {
-	if len(ss) > 10 {
-		sss := make([]*Status, len(ss))
+func appendStatus(ss []Status, s Status) []Status {
+	if len(ss) >= 48 {
+		sss := make([]Status, len(ss))
 		for k, v := range ss {
-			if k == 1 {
+			if k == 0 {
 				continue
 			}
-			sss = append(sss, v)
+			sss[k-1] = v
 		}
-		ss = sss
+		sss[len(ss)-1] = s
+		return sss
 	}
 	return append(ss, s)
 }
 
-var statuss = Statuss{}
+var statuss = []Status{}
 
 func ReloadStatus() {
 	go func() {
@@ -59,7 +58,7 @@ func ReloadStatus() {
 		}
 	}()
 	go func() {
-		for range time.Tick(30 * time.Second) {
+		for range time.Tick(30 * time.Minute) {
 			statuss = appendStatus(statuss, status)
 		}
 	}()
