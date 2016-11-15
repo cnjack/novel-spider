@@ -34,7 +34,10 @@ func RunATask() {
 
 	t, err := getTask()
 	if err != nil {
-		log.Printf("ERROR: Gain Task ERROR; ERRstring: %s", err.Error())
+		if err != gorm.ErrRecordNotFound {
+			log.Printf("ERROR: Gain Task ERROR; ERRstring: %s", err.Error())
+		}
+		//
 		time.Sleep(30 * time.Second)
 		RunATask()
 	}
@@ -217,7 +220,7 @@ func getTask() (task *model.Task, err error) {
 		}
 	}()
 	task = &model.Task{}
-	if err = db.Raw("SELECT * FROM tasks WHERE status IN (?, ?) AND deleted_at IS NULL ORDER BY id ASC LIMIT 0, 1 FOR UPDATE", model.TaskStatusPrepare, model.TaskStatusFail).Scan(task).Error; err != nil {
+	if err = db.Raw("SELECT * FROM tasks WHERE status IN (?, ?) AND deleted_at IS NULL ORDER BY status, id ASC LIMIT 0, 1 FOR UPDATE", model.TaskStatusPrepare, model.TaskStatusFail).Scan(task).Error; err != nil {
 		return nil, err
 	}
 	if err = tx.Model(&model.Task{}).Where("id = ?", task.ID).Updates(map[string]interface{}{"status": model.TaskStatusRunning}).Error; err != nil {
