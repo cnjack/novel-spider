@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"strings"
 
+	"fmt"
 	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -33,11 +34,36 @@ func (s *SnwxNovel) Match(urlString string) bool {
 	if len(paths) == 0 {
 		return false
 	}
+
+	if len(paths) == 2 && paths[0] == "txt" {
+		d := downloader.NewHttpDownloaderFromUrl(u).Download()
+		if err := d.Error(); err != nil {
+			return false
+		}
+		doc, err := d.Resource().Document()
+		if err != nil {
+			return false
+		}
+		nurl := ""
+		doc.Find("a").EachWithBreak(func(i int, d *goquery.Selection) bool {
+			if i == 1 {
+				u, ok := d.Attr("href")
+				if !ok {
+					return true
+				}
+				nurl = u
+				return false
+			}
+			return true
+		})
+		return s.Match(nurl)
+	}
 	if len(paths) == 3 && paths[0] == "book" {
 		s.BookID = paths[1] + "/" + paths[2]
 		if err != nil {
 			return false
 		}
+		fmt.Println(u)
 		return true
 	}
 	return false
