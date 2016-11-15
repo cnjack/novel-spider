@@ -3,9 +3,10 @@ package engine
 import (
 	"git.oschina.net/cnjack/novel-spider/config"
 
+	"time"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"time"
 )
 
 var (
@@ -33,6 +34,5 @@ func Http() {
 
 func init() {
 	ReloadStatus()
-
 
 }

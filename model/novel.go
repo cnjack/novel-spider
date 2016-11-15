@@ -2,8 +2,9 @@ package model
 
 import (
 	"encoding/json"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Novel struct {
@@ -78,7 +79,7 @@ func FindNovelByAuth(db *gorm.DB, auth string, op *PageOption) (ns []Novel, err 
 	return
 }
 
-func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel,err error) {
+func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
 	}

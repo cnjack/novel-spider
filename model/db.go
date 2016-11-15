@@ -9,17 +9,17 @@ import (
 var db *gorm.DB
 
 type PageOption struct {
-	Page    int
-	Count   int
-	All     bool
-	Sort string
+	Page  int
+	Count int
+	All   bool
+	Sort  string
 }
 
 var defaultPageOption = &PageOption{
-	Page:    0,
-	Count:   25,
-	All:     false,
-	Sort: "desc",
+	Page:  0,
+	Count: 25,
+	All:   false,
+	Sort:  "desc",
 }
 
 func MustGetDB() (*gorm.DB, error) {
