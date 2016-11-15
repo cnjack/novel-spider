@@ -8,13 +8,13 @@ import (
 )
 
 type Status struct {
-	RunningTasks      int      `json:"running_tasks"`
-	PrepareTasks      int      `json:"prepare_tasks"`
-	ServerStartTime   string   `json:"server_start_time"`
-	ServerTunningTime string   `json:"server_running_time"`
-	Now               string   `json:"now"`
-	SuccessTasks      int      `json:"success_tasks"`
-	NovelNum          int      `json:"novel_num"`
+	RunningTasks      int         `json:"running_tasks"`
+	PrepareTasks      int         `json:"prepare_tasks"`
+	ServerStartTime   string      `json:"server_start_time"`
+	ServerTunningTime string      `json:"server_running_time"`
+	Now               string      `json:"now"`
+	SuccessTasks      int         `json:"success_tasks"`
+	NovelNum          int         `json:"novel_num"`
 	SystemStatus      interface{} `json:"system_status"`
 }
 
