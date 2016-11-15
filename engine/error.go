@@ -11,7 +11,7 @@ type NightcErr struct {
 	HttpCode int         `json:"-"`
 }
 
-func (e *NightcErr) Error() (string) {
+func (e *NightcErr) Error() string {
 	es, _ := json.Marshal(e)
 	return string(es)
 }
@@ -25,7 +25,7 @@ func NewNightcErr(httpCode, code int, data interface{}) *NightcErr {
 }
 
 var (
-	ParamError  = NewNightcErr(http.StatusForbidden, 1, "param err")
-	ServerError = NewNightcErr(http.StatusInternalServerError, 1, "server err")
+	ParamError     = NewNightcErr(http.StatusForbidden, 1, "param err")
+	ServerError    = NewNightcErr(http.StatusInternalServerError, 1, "server err")
 	RecodeNotFound = NewNightcErr(http.StatusNotFound, 1, "recode not found")
 )

@@ -1,12 +1,13 @@
 package engine
 
 import (
-	"git.oschina.net/cnjack/novel-spider/model"
-	"git.oschina.net/cnjack/novel-spider/spider"
-	"github.com/labstack/echo"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"git.oschina.net/cnjack/novel-spider/model"
+	"git.oschina.net/cnjack/novel-spider/spider"
+	"github.com/labstack/echo"
 )
 
 func getNovelDetails(c echo.Context) error {

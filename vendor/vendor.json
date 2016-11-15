@@ -15,10 +15,22 @@
 			"revisionTime": "2016-08-31T16:22:11Z"
 		},
 		{
+			"checksumSHA1": "pALQE1Z3IJ9rvvir/Zg1hOt8X0I=",
+			"path": "github.com/Unknwon/goconfig",
+			"revision": "5aa4f8cd5a472c2411c778b4680f59f2223f1966",
+			"revisionTime": "2016-08-28T12:49:05Z"
+		},
+		{
 			"checksumSHA1": "YKJEHQmesxr6ExwGE4WZrpQsq4s=",
 			"path": "github.com/andybalholm/cascadia",
 			"revision": "3ad29d1ad1c4f2023e355603324348cf1f4b2d48",
 			"revisionTime": "2015-07-30T17:44:59Z"
+		},
+		{
+			"checksumSHA1": "em14TGjAfvOo8wcn0Sh03IdScpE=",
+			"path": "github.com/cnjack/monitor",
+			"revision": "193f030c6cc62f5544e7f2c9ce93133e39316cea",
+			"revisionTime": "2016-11-15T06:58:54Z"
 		},
 		{
 			"checksumSHA1": "Lf3uUXTkKK5DJ37BxQvxO1Fq+K8=",
