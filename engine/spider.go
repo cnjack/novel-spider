@@ -15,7 +15,6 @@ import (
 )
 
 var w = sync.WaitGroup{}
-var spiders []spider.Spider
 
 func Spider() {
 	if config.GetSpiderConfig().StopSingle {
@@ -48,6 +47,10 @@ func RunATask() {
 }
 
 func runTask(t *model.Task) error {
+	spiders := []spider.Spider{
+		&spider.SnwxChapter{},
+		&spider.SnwxNovel{},
+	}
 	for _, s := range spiders {
 		if !s.Match(t.Url) {
 			continue
@@ -221,11 +224,4 @@ func getTask() (task *model.Task, err error) {
 		return nil, err
 	}
 	return
-}
-
-func init() {
-	spiders = []spider.Spider{
-		&spider.SnwxChapter{},
-		&spider.SnwxNovel{},
-	}
 }

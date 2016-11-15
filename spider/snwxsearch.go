@@ -1,14 +1,12 @@
 package spider
 
 import (
-	"fmt"
 	"net/url"
 
+	"fmt"
 	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
 )
-
-var filter = SnwxNovel{}
 
 type SnwxSearch struct {
 	NovelName string
@@ -39,14 +37,17 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		var b bool
 		d := selection.Find(".c-title a")
 		search := Search{}
-		search.From, b = d.Attr("href")
+		from, b := d.Attr("href")
+
 		if !b {
 			return
 		}
-		if !filter.Match(search.From) {
+		filter := &SnwxNovel{}
+		if !filter.Match(from) {
 			return
 		}
 		search.SearchName = d.Text()
+		search.From = filter.Url.String()
 		search.Name = s.NovelName
 		searchs = append(searchs, &search)
 	})
