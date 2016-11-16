@@ -107,9 +107,17 @@ func getChapter(c echo.Context) error {
 	})
 }
 
-func getSearch(c echo.Context) error {
-	title := c.Param("title")
-	if title == "" {
+type PostSearchParam struct {
+	Title string `json:"title"`
+}
+
+func postSearch(c echo.Context) error {
+	postSearchParam := &PostSearchParam{}
+	err := c.Bind(postSearchParam)
+	if err != nil {
+		return ParamError
+	}
+	if postSearchParam.Title == "" {
 		return ParamError
 	}
 	searchs := []spider.Spider{
@@ -117,7 +125,7 @@ func getSearch(c echo.Context) error {
 	}
 	var data = []*spider.Search{}
 	for _, s := range searchs {
-		if s.Match(title) {
+		if s.Match(postSearchParam.Title) {
 			sRespInterface, err := s.Gain()
 			if err != nil {
 				return err

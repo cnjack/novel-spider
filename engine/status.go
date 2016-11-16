@@ -21,7 +21,7 @@ type Status struct {
 var status = Status{}
 
 func appendStatus(ss []Status, s Status) []Status {
-	if len(ss) >= 48 {
+	if len(ss) >= 40 {
 		sss := make([]Status, len(ss))
 		for k, v := range ss {
 			if k == 0 {
@@ -41,7 +41,7 @@ func ReloadStatus() {
 	go func() {
 		for range time.Tick(1 * time.Second) {
 			status.ServerTunningTime = time.Now().Sub(startTime).String()
-			status.Now = time.Now().Format(time.RFC3339)
+			status.Now = time.Now().Format("15:04")
 		}
 	}()
 	go func() {
@@ -58,7 +58,7 @@ func ReloadStatus() {
 		}
 	}()
 	go func() {
-		for range time.Tick(30 * time.Minute) {
+		for range time.Tick(5 * time.Second) {
 			statuss = appendStatus(statuss, status)
 		}
 	}()
