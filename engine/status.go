@@ -41,7 +41,7 @@ func ReloadStatus() {
 	go func() {
 		for range time.Tick(1 * time.Second) {
 			status.ServerTunningTime = time.Now().Sub(startTime).String()
-			status.Now = time.Now().Format("15:04")
+			status.Now = time.Now().Format("15:04:05")
 		}
 	}()
 	go func() {
