@@ -28,4 +28,5 @@ var (
 	ParamError     = NewNightcErr(http.StatusForbidden, 1, "param err")
 	ServerError    = NewNightcErr(http.StatusInternalServerError, 1, "server err")
 	RecodeNotFound = NewNightcErr(http.StatusNotFound, 1, "recode not found")
+	TaskIsRepeated = NewNightcErr(http.StatusForbidden, 1, "task is repeated")
 )
