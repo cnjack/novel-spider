@@ -9,6 +9,7 @@ import (
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
+	"fmt"
 )
 
 func getNovelDetails(c echo.Context) error {
@@ -99,12 +100,30 @@ func getChapter(c echo.Context) error {
 	if err != nil {
 		return ServerError
 	}
+	var next, prev = 0, 0
+	var pages = []model.Chapter{}
+	if err := db.Where("`index` IN (?, ?) AND `novel_id` = ?", chapter.Index-1, chapter.Index+1, chapter.NovelID).Find(&pages).Error; err != nil {
+		fmt.Println(err)
+		return ServerError
+	}
+	if len(pages) == 2 {
+		next = int(pages[0].ID)
+		prev = int(pages[1].ID)
+	} else if len(pages) == 1 {
+		if chapter.Index == 0 {
+			prev = int(pages[0].ID)
+		} else {
+			next = int(pages[0].ID)
+		}
+	}
 	if chapter == nil {
 		return RecodeNotFound
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
 		"data": chapter.Todata(),
+		"next": next,
+		"prev": prev,
 	})
 }
 
