@@ -5,11 +5,11 @@ import (
 	"net/url"
 	"strconv"
 
+	"fmt"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"fmt"
 )
 
 func getNovelDetails(c echo.Context) error {
@@ -107,13 +107,13 @@ func getChapter(c echo.Context) error {
 		return ServerError
 	}
 	if len(pages) == 2 {
-		next = int(pages[0].ID)
-		prev = int(pages[1].ID)
+		prev = int(pages[0].ID)
+		next = int(pages[1].ID)
 	} else if len(pages) == 1 {
 		if chapter.Index == 0 {
-			prev = int(pages[0].ID)
-		} else {
 			next = int(pages[0].ID)
+		} else {
+			prev = int(pages[0].ID)
 		}
 	}
 	if chapter == nil {
