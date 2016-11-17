@@ -35,7 +35,7 @@ func RunATask() {
 	t, err := getTask()
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
-			log.Printf("ERROR: Gain Task ERROR; ERRstring: %s", err.Error())
+			log.Printf("ERROR: getTask ERROR; ERRstring: %s", err.Error())
 		}
 		//
 		time.Sleep(30 * time.Second)
@@ -49,7 +49,12 @@ func RunATask() {
 	RunATask()
 }
 
-func runTask(t *model.Task) error {
+func runTask(t *model.Task) (err error) {
+	defer func(){
+		if err != nil {
+			t.ChangeTaskStatus(model.TaskStatusFail)
+		}
+	}()
 	spiders := []spider.Spider{
 		&spider.SnwxChapter{},
 		&spider.SnwxNovel{},
@@ -78,9 +83,9 @@ func runTask(t *model.Task) error {
 func flashTask(t *model.Task, data interface{}) (err error) {
 	switch t.TType {
 	case model.NovelTask:
-		flashNovelTask(t, data)
+		err = flashNovelTask(t, data)
 	case model.ChapterTask:
-		flashChapterTask(t, data)
+		err = flashChapterTask(t, data)
 	default:
 		return errors.New("unknown task")
 	}
