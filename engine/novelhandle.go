@@ -7,6 +7,7 @@ import (
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
@@ -179,6 +180,14 @@ func postNovelTask(c echo.Context) error {
 		Url:    postTaskParam.Url,
 		Status: model.TaskStatusPrepare,
 		Times:  -1,
+	}
+	var exist = &model.Task{}
+	err = db.Model(exist).Where("url = ?", postTaskParam.Url).First(exist).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return ServerError
+	}
+	if err != gorm.ErrRecordNotFound {
+		return TaskIsRepeated
 	}
 	if err := db.Model(task).Create(task).Error; err != nil {
 		return ServerError
