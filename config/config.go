@@ -52,7 +52,7 @@ func load() {
 	h.AccessKey, _ = config.GetValue("http", "accessKey")
 	h.SecretKey, _ = config.GetValue("http", "secretKey")
 	h.BucketName, _ = config.GetValue("http", "bucketName")
-	h.BucketUrl, _ = config.GetValue("http", "nucketUrl")
+	h.BucketUrl, _ = config.GetValue("http", "bucketHost")
 	s.StopSingle, err = config.Bool("spider", "stop")
 	if err != nil {
 		s.StopSingle = true
