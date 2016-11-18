@@ -13,6 +13,7 @@ type Novel struct {
 	Auth         string      `sql:"auth" json:"auth"`
 	Style        string      `sql:"style" json:"style"`
 	Status       NovelStatus `sql:"status" json:"status"`
+	Cover        string      `sql:"cover" json:"cover"`
 	Introduction string      `sql:"introduction" gorm:"type:text" json:"intrduction"`
 	Chapter      string      `sql:"chapter" gorm:"type:longtext" json:"-"`
 	Url          string      `sql:"url" json:"from"`

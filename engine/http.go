@@ -22,7 +22,6 @@ func Http() {
 	e.Use(middleware.BodyLimit("1M"))
 	e.Use(middleware.Logger())
 
-	e.Static("/", config.GetHttpConfig().StaticPath)
 	v1 := e.Group("v1")
 	WarpRouter(v1)
 

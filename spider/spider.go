@@ -7,6 +7,7 @@ type Novel struct {
 	Introduction string
 	From         string
 	Status       string
+	Cover        string
 	Chapter      []*Chapter
 }
 

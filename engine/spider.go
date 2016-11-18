@@ -11,6 +11,7 @@ import (
 	"git.oschina.net/cnjack/novel-spider/config"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
+	"git.oschina.net/cnjack/novel-spider/tool"
 	"github.com/jinzhu/gorm"
 )
 
@@ -50,7 +51,7 @@ func RunATask() {
 }
 
 func runTask(t *model.Task) (err error) {
-	defer func(){
+	defer func() {
 		if err != nil {
 			t.ChangeTaskStatus(model.TaskStatusFail)
 		}
@@ -126,9 +127,14 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 		}
 	}
 	if dbNovel.ID == 0 {
+		cover, err := tool.UploadFromUrl(novel.Cover)
+		if err != nil {
+			cover = novel.Cover
+		}
 		dbNovel = &model.Novel{
 			Title:        novel.Title,
 			Auth:         novel.Auth,
+			Cover:        cover,
 			Style:        novel.Style,
 			Status:       model.String2NovelStatus(novel.Status),
 			Introduction: novel.Introduction,

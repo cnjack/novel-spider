@@ -10,7 +10,10 @@ var config *goconfig.ConfigFile
 
 type HttpConfig struct {
 	Port       string
-	StaticPath string
+	AccessKey  string
+	SecretKey  string
+	BucketName string
+	BucketUrl  string
 }
 
 type MysqlConfig struct {
@@ -46,10 +49,10 @@ func load() {
 	if err != nil {
 		h.Port = ":1314"
 	}
-	h.StaticPath, err = config.GetValue("http", "static_path")
-	if err != nil {
-		h.StaticPath = "./"
-	}
+	h.AccessKey, _ = config.GetValue("http", "accessKey")
+	h.SecretKey, _ = config.GetValue("http", "secretKey")
+	h.BucketName, _ = config.GetValue("http", "bucketName")
+	h.BucketUrl, _ = config.GetValue("http", "nucketUrl")
 	s.StopSingle, err = config.Bool("spider", "stop")
 	if err != nil {
 		s.StopSingle = true

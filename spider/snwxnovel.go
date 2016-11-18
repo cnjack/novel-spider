@@ -4,8 +4,6 @@ import (
 	"net/url"
 	"strings"
 
-	"fmt"
-
 	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -64,7 +62,6 @@ func (s *SnwxNovel) Match(urlString string) bool {
 		if err != nil {
 			return false
 		}
-		fmt.Println(u)
 		return true
 	}
 	return false
@@ -82,6 +79,7 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	}
 	var novel Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
+	novel.Cover, _ = doc.Find("#fmimg img").Attr("src")
 	novel.From = u.String()
 	doc.Find(".infotitle i").Each(func(i int, s *goquery.Selection) {
 		ss := strings.Split(s.Text(), "：")
