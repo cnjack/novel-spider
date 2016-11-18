@@ -80,6 +80,9 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	var novel Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
 	novel.Cover, _ = doc.Find("#fmimg img").Attr("src")
+	if novel.Cover == "/modules/article/images/nocover.jpg" {
+		novel.Cover = ""
+	}
 	novel.From = u.String()
 	doc.Find(".infotitle i").Each(func(i int, s *goquery.Selection) {
 		ss := strings.Split(s.Text(), "：")
