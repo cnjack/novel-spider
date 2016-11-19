@@ -27,6 +27,12 @@
 			"revisionTime": "2015-07-30T17:44:59Z"
 		},
 		{
+			"checksumSHA1": "7lRVbjtoJoM/WTsyegEs4Q/gApA=",
+			"path": "github.com/cnjack/echo-binder",
+			"revision": "83c139498e546739f3a904ee05c5e305f3ea6cdb",
+			"revisionTime": "2016-10-27T11:06:59Z"
+		},
+		{
 			"checksumSHA1": "em14TGjAfvOo8wcn0Sh03IdScpE=",
 			"path": "github.com/cnjack/monitor",
 			"revision": "193f030c6cc62f5544e7f2c9ce93133e39316cea",
@@ -46,10 +52,34 @@
 			"revisionTime": "2016-08-31T18:35:34Z"
 		},
 		{
+			"checksumSHA1": "GNdSyOORtqElpQgwdVeRQ7yLN24=",
+			"path": "github.com/go-playground/locales",
+			"revision": "e09c334054e376ba0c75ebb8dcdf36a4733f1772",
+			"revisionTime": "2016-09-27T01:46:37Z"
+		},
+		{
+			"checksumSHA1": "IaBjhTJJGuXCg+v+xd8G+SK4Pg8=",
+			"path": "github.com/go-playground/locales/currency",
+			"revision": "e09c334054e376ba0c75ebb8dcdf36a4733f1772",
+			"revisionTime": "2016-09-27T01:46:37Z"
+		},
+		{
+			"checksumSHA1": "Ime813ug/lqjG8OK4TDRoLQv4L0=",
+			"path": "github.com/go-playground/universal-translator",
+			"revision": "fc73d0c4bd37070e0d34e3647253565ff7847264",
+			"revisionTime": "2016-09-14T18:35:43Z"
+		},
+		{
 			"checksumSHA1": "jEXpLrWXoQvH/zk1lW5Si0swr6Y=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "0b58b37b664c21f3010e836f1b931e1d0b0b0685",
 			"revisionTime": "2016-08-02T11:38:42Z"
+		},
+		{
+			"checksumSHA1": "qyMvpPz5L2bLSFrJdKqeCX7j+zw=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
+			"revisionTime": "2016-11-17T03:31:26Z"
 		},
 		{
 			"checksumSHA1": "yZEeRmX++DRIW2JWZYKDztgQDMY=",
@@ -116,6 +146,12 @@
 			"path": "github.com/mattn/go-isatty",
 			"revision": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8",
 			"revisionTime": "2016-08-06T12:27:52Z"
+		},
+		{
+			"checksumSHA1": "6d6lxDzMbtU+Ei8OIdwDBZE2MSo=",
+			"path": "github.com/microcosm-cc/bluemonday",
+			"revision": "f77f16ffc87a6a58814e64ae72d55f9c41374e6d",
+			"revisionTime": "2016-10-12T08:37:05Z"
 		},
 		{
 			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
@@ -281,6 +317,12 @@
 			"checksumSHA1": "eFQDEix/mGnhwnFu/Hq63zMfrX8=",
 			"path": "golang.org/x/time/rate",
 			"revision": ""
+		},
+		{
+			"checksumSHA1": "MxoowyjQgTE6vi+5viNQyvd0xeI=",
+			"path": "gopkg.in/go-playground/validator.v9",
+			"revision": "493dfb6209fcb493fcdbc2a0f14b882f2d53979f",
+			"revisionTime": "2016-09-28T14:56:49Z"
 		},
 		{
 			"checksumSHA1": "4FonadPMjBW33hDoyy+ZtBmU/bc=",

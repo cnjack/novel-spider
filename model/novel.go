@@ -99,6 +99,8 @@ func (n *Novel) Todata() interface{} {
 		"style":        n.Style,
 		"status":       n.Status,
 		"introduction": n.Introduction,
+		"cover":        n.Cover,
+		"chapters":     n.ChapterTodata(),
 		"url":          n.Url,
 	}
 	return resp
