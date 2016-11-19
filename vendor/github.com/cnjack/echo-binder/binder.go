@@ -26,19 +26,17 @@ var (
 func BindBinder(e *echo.Echo) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
-			b := NewBinder(c)
-			e.SetBinder(b)
+			e.Binder = NewBinder(c)
 			return next(c)
 		}
 	}
 }
 
 func NewBinder(c echo.Context) Binder {
-
-	if c.Request().Method() == echo.GET {
+	if c.Request().Method == echo.GET {
 		return Form
 	} else {
-		ctype := c.Request().Header().Get(echo.HeaderContentType)
+		ctype := c.Request().Header.Get(echo.HeaderContentType)
 		switch {
 		case strings.HasPrefix(ctype, echo.MIMEApplicationJSON):
 			return JSON
