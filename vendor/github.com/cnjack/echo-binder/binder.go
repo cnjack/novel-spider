@@ -5,10 +5,6 @@ import (
 	"strings"
 )
 
-type Binder interface {
-	Bind(interface{}, echo.Context) error
-}
-
 type StructValidator interface {
 	ValidateStruct(interface{}) error
 }
@@ -32,7 +28,7 @@ func BindBinder(e *echo.Echo) echo.MiddlewareFunc {
 	}
 }
 
-func NewBinder(c echo.Context) Binder {
+func NewBinder(c echo.Context) echo.Binder {
 	if c.Request().Method == echo.GET {
 		return Form
 	} else {
