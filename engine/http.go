@@ -1,10 +1,10 @@
 package engine
 
 import (
-	"git.oschina.net/cnjack/novel-spider/config"
-
 	"time"
 
+	"git.oschina.net/cnjack/novel-spider/config"
+	"github.com/cnjack/echo-binder"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -21,10 +21,9 @@ func Http() {
 	e.Use(middleware.Gzip())
 	e.Use(middleware.BodyLimit("1M"))
 	e.Use(middleware.Logger())
-
+	e.Use(binder.BindBinder(e))
 	v1 := e.Group("v1")
 	WarpRouter(v1)
-
 	port := config.GetHttpConfig().Port
 	if err := e.Start(port); err != nil {
 		e.Logger.Fatal(err.Error())

@@ -2,6 +2,7 @@ package tool
 
 import (
 	"errors"
+
 	"git.oschina.net/cnjack/novel-spider/config"
 	"github.com/satori/go.uuid"
 	"qiniupkg.com/api.v7/kodo"
@@ -32,7 +33,7 @@ func UploadFromUrl(fetchURL string) (string, error) {
 			return "", err
 		}
 	}
-	keyFetch := uuid.NewV4().String()
+	keyFetch := "spider/" + uuid.NewV4().String()
 	err = bucket.Fetch(nil, keyFetch, fetchURL)
 	if err != nil {
 		return "", err
