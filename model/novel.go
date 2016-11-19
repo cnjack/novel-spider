@@ -90,7 +90,7 @@ func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel, err error) {
 	return
 }
 
-func (n *Novel) Todata() interface{} {
+func (n *Novel) Todata(more bool) interface{} {
 	resp := map[string]interface{}{
 		"id":           n.ID,
 		"create_at":    n.CreatedAt.Format(time.RFC3339),
@@ -100,8 +100,10 @@ func (n *Novel) Todata() interface{} {
 		"status":       n.Status,
 		"introduction": n.Introduction,
 		"cover":        n.Cover,
-		"chapters":     n.ChapterTodata(),
 		"url":          n.Url,
+	}
+	if more {
+		resp["chapters"] = n.ChapterTodata()
 	}
 	return resp
 }

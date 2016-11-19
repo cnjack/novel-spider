@@ -32,7 +32,7 @@ func getNovelDetails(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
-		"data": novel.Todata(),
+		"data": novel.Todata(true),
 	})
 }
 
@@ -51,7 +51,7 @@ func getNovels(c echo.Context) error {
 	}
 	var data = []interface{}{}
 	for _, v := range novels {
-		data = append(data, v.Todata())
+		data = append(data, v.Todata(false))
 	}
 	nextPage := 0
 	if len(novels) >= op.Count {
