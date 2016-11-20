@@ -6,6 +6,7 @@ import (
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
+	"net/http"
 )
 
 const PageOptionKey = `Page-Option-Key`
@@ -40,5 +41,24 @@ func ParseParam(next echo.HandlerFunc) echo.HandlerFunc {
 		fmt.Println(op.Page)
 		c.Set(PageOptionKey, op)
 		return next(c)
+	}
+}
+
+func ErrorHandle(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		err := next(c)
+		switch err.(type) {
+
+		case *NightcErr:
+			return c.JSON(err.(*NightcErr).HttpCode, map[string]interface{}{
+				"code": err.(*NightcErr).Code,
+				"data": err.(*NightcErr).Data,
+			})
+		default:
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code": 1,
+				"data": err.Error(),
+			})
+		}
 	}
 }
