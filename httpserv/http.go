@@ -21,6 +21,7 @@ func Http() {
 	e.Use(middleware.Gzip())
 	e.Use(middleware.BodyLimit("1M"))
 	e.Use(middleware.Logger())
+	e.Use(ErrorHandle)
 	e.Use(binder.BindBinder(e))
 	v1 := e.Group("v1")
 	WarpRouter(v1)
@@ -32,5 +33,4 @@ func Http() {
 
 func init() {
 	ReloadStatus()
-
 }
