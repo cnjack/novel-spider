@@ -6,10 +6,10 @@
 admin@nightc.com
 
 ### demo
-演示地址： [http://novel.nightc.com](novel) 
+演示地址： [novel](http://novel.nightc.com) 
 
 ### TODO v1.1
- - 配合[http://git.oschina.net/cnjack/novel-view](novel-view)和[http://git.oschina.net/cnjack/novel-mobile](novel-mobile)进行优化
+ - 配合[novel-view](http://git.oschina.net/cnjack/novel-view)和[novel-mobile](http://git.oschina.net/cnjack/novel-mobile)进行优化
  - task优化 多次更新
  - sql表优化
  - 错误处理完善
