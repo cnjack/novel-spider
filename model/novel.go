@@ -11,7 +11,8 @@ type Novel struct {
 	gorm.Model
 	Title        string      `sql:"title" json:"title"`
 	Auth         string      `sql:"auth" json:"auth"`
-	Style        string      `sql:"style" json:"style"`
+	Style        string      `sql:"-" json:"style"`
+	TagID        int         `sql:"tag_id" json:"tag_id"`
 	Status       NovelStatus `sql:"status" json:"status"`
 	Cover        string      `sql:"cover" json:"cover"`
 	Introduction string      `sql:"introduction" gorm:"type:text" json:"intrduction"`
