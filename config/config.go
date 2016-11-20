@@ -55,7 +55,7 @@ func load() {
 	h.BucketUrl, _ = config.GetValue("http", "bucketHost")
 	s.StopSingle, err = config.Bool("spider", "stop")
 	if err != nil {
-		s.StopSingle = true
+		s.StopSingle = false
 	}
 	s.MaxProcess, err = config.Int("spider", "max_process")
 	if err != nil {

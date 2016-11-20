@@ -13,6 +13,7 @@ import (
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"git.oschina.net/cnjack/novel-spider/tool"
 	"github.com/jinzhu/gorm"
+	"fmt"
 )
 
 var w = sync.WaitGroup{}
@@ -50,6 +51,16 @@ func RunATask() {
 	RunATask()
 }
 
+var StyleMap = map[string]string{
+	"玄幻小说": "玄幻",
+	"修真小说": "修真",
+	"都市小说": "都市",
+	"穿越小说": "穿越",
+	"网游小说": "网游",
+	"科幻小说": "科幻",
+	"其他小说": "其他",
+}
+
 func runTask(t *model.Task) (err error) {
 	defer func() {
 		if err != nil {
@@ -58,7 +69,7 @@ func runTask(t *model.Task) (err error) {
 	}()
 	spiders := []spider.Spider{
 		&spider.SnwxChapter{},
-		&spider.SnwxNovel{},
+		&spider.SnwxNovel{StyleMap: &StyleMap},
 	}
 	for _, s := range spiders {
 		if !s.Match(t.Url) {
@@ -111,6 +122,8 @@ type NovelChapter struct {
 	Url       string `json:"url"`
 }
 
+var stylemap map[string]int
+
 func flashNovelTask(t *model.Task, data interface{}) error {
 	novel, ok := data.(spider.Novel)
 	if !ok {
@@ -120,6 +133,16 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 	db, err := model.MustGetDB()
 	if err != nil {
 		return err
+	}
+	if stylemap == nil {
+		tags, err := model.GetTags(db)
+		if err != nil {
+			return err
+		}
+		stylemap = map[string]int{}
+		for _, v := range *tags {
+			stylemap[v.TagName] = v.ID
+		}
 	}
 	if err := db.Model(dbNovel).Where("title = ? AND url = ? AND auth = ?", novel.Title, novel.From, novel.Auth).Find(dbNovel).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
@@ -135,11 +158,20 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 			Title:        novel.Title,
 			Auth:         novel.Auth,
 			Cover:        cover,
-			Style:        novel.Style,
 			Status:       model.String2NovelStatus(novel.Status),
 			Introduction: novel.Introduction,
 			Url:          novel.From,
+			TagID:        0,
 		}
+		if stylemap != nil {
+			tag, ok := stylemap[dbNovel.Style]
+			if ok {
+				dbNovel.TagID = tag
+			}
+		}
+		fmt.Println(stylemap)
+		fmt.Println(dbNovel.Style)
+		fmt.Println(dbNovel.TagID)
 		if err := db.Model(dbNovel).Create(dbNovel).Error; err != nil {
 			return err
 		}

@@ -9,9 +9,10 @@ import (
 )
 
 type SnwxNovel struct {
-	Url    *url.URL
-	BookID string
-	Data   interface{}
+	Url      *url.URL
+	BookID   string
+	StyleMap *map[string]string
+	Data     interface{}
 }
 
 func (s *SnwxNovel) Name() string {
@@ -98,6 +99,14 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 			novel.Status = sss
 		}
 	})
+	if snwx.StyleMap != nil {
+		style, ok := (*snwx.StyleMap)[novel.Style]
+		if ok {
+			novel.Style = style
+		} else {
+			novel.Style = "其他"
+		}
+	}
 	introString, err := doc.Find(".intro").Html()
 	if err != nil {
 		return nil, err

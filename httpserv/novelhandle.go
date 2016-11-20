@@ -1,4 +1,4 @@
-package engine
+package httpserv
 
 import (
 	"net/http"
@@ -27,6 +27,11 @@ func getNovelDetails(c echo.Context) error {
 	if err != nil {
 		return ServerError
 	}
+	tag, err := model.FirstTagsByID(db, novel.TagID)
+	if err != nil {
+		novel.Style = "其他"
+	}
+	novel.Style = tag.TagName
 	if novel == nil {
 		return RecodeNotFound
 	}
@@ -50,6 +55,21 @@ func getNovels(c echo.Context) error {
 		return RecodeNotFound
 	}
 	var data = []interface{}{}
+	tags, err := model.GetTags(db)
+	if err != nil {
+		return ServerError
+	}
+	for k,v := range novels {
+		for _,vv := range *tags {
+			if vv.ID == v.TagID {
+				novels[k].Style = vv.TagName
+				break
+			}
+		}
+		if novels[k].Style == "" {
+			novels[k].Style = "其他"
+		}
+	}
 	for _, v := range novels {
 		data = append(data, v.Todata(false))
 	}
