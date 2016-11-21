@@ -12,6 +12,7 @@ func WarpRouter(g *echo.Group) {
 	g.GET("/statuss", getStatuss)
 	g.GET("/novel/:id", getNovelDetails)
 	g.GET("/novels", getNovels, ParseParam)
+	g.GET("/novels/style/:style", getStyleNovels, ParseParam)
 	g.POST("/search", postSearch)
 	g.POST("/novel/task", postNovelTask)
 	g.GET("/novel/:id/chapters", getNovelChapters)

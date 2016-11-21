@@ -8,12 +8,13 @@ import (
 	"sync"
 	"time"
 
+	"fmt"
+
 	"git.oschina.net/cnjack/novel-spider/config"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"git.oschina.net/cnjack/novel-spider/tool"
 	"github.com/jinzhu/gorm"
-	"fmt"
 )
 
 var w = sync.WaitGroup{}
