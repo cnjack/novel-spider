@@ -91,6 +91,16 @@ func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel, err error) {
 	return
 }
 
+func FindNovelsWithStyle(db *gorm.DB, styleID int, op *PageOption) (ns []Novel, err error) {
+	if op == nil {
+		op = defaultPageOption
+	}
+	if err = db.Model(&Novel{}).Where("tag_id = ?", styleID).Order("id " + op.Sort).Limit(op.Count).Offset(op.Page * op.Count).Find(&ns).Error; err != nil {
+		return nil, err
+	}
+	return
+}
+
 func (n *Novel) Todata(more bool) interface{} {
 	resp := map[string]interface{}{
 		"id":           n.ID,

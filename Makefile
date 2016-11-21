@@ -4,6 +4,7 @@ fmt:
 	goimports -w -l ./engine
 	goimports -w -l ./tool
 	goimports -w -l ./config
+	goimports -w -l ./httpserv
 	goimports -w -l ./main.go
 update:
 	govendor add +e

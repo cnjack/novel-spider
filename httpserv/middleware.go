@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
+	"net/http"
+
 	"git.oschina.net/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 const PageOptionKey = `Page-Option-Key`
