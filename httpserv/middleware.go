@@ -48,8 +48,10 @@ func ParseParam(next echo.HandlerFunc) echo.HandlerFunc {
 func ErrorHandle(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		err := next(c)
+		if err == nil {
+			return nil
+		}
 		switch err.(type) {
-
 		case *NightcErr:
 			return c.JSON(err.(*NightcErr).HttpCode, map[string]interface{}{
 				"code": err.(*NightcErr).Code,
