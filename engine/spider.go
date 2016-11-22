@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"fmt"
-
 	"git.oschina.net/cnjack/novel-spider/config"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
@@ -170,9 +168,6 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 				dbNovel.TagID = tag
 			}
 		}
-		fmt.Println(stylemap)
-		fmt.Println(dbNovel.Style)
-		fmt.Println(dbNovel.TagID)
 		if err := db.Model(dbNovel).Create(dbNovel).Error; err != nil {
 			return err
 		}
