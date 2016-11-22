@@ -41,101 +41,47 @@ func getNovelDetails(c echo.Context) error {
 	})
 }
 
-func getNovels(c echo.Context) error {
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
-	op := c.Get(PageOptionKey).(*model.PageOption)
-	novels, err := model.FindNovels(db, op)
-	if err != nil {
-		return ServerError
-	}
-	if novels == nil {
-		return RecodeNotFound
-	}
-	var data = []interface{}{}
-	tags, err := model.GetTags(db)
-	if err != nil {
-		return ServerError
-	}
-	for k, v := range novels {
-		for _, vv := range *tags {
-			if vv.ID == v.TagID {
-				novels[k].Style = vv.TagName
-				break
-			}
-		}
-		if novels[k].Style == "" {
-			novels[k].Style = "其他"
-		}
-	}
-	for _, v := range novels {
-		data = append(data, v.Todata(false))
-	}
-	nextPage := 0
-	if len(novels) >= op.Count {
-		nextPage = op.Page + 1
-	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"next": nextPage,
-		"data": data,
-	})
-}
-
-func getStyleNovels(c echo.Context) error {
-	styleString := c.Param("style")
-	styleID, err := strconv.Atoi(styleString)
-	if err != nil {
-		return ParamError
-	}
-	if styleID <= 0 {
+func deleteNovel(c echo.Context) error {
+	idString := c.Param("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil || id == 0 {
 		return ParamError
 	}
 	db, err := model.MustGetDB()
 	if err != nil {
 		return ServerError
 	}
-	tag, err := model.FirstTagsByID(db, styleID)
+	novel, err := model.FirstNovelByID(db, uint(id))
 	if err != nil {
 		return ServerError
 	}
-	op := c.Get(PageOptionKey).(*model.PageOption)
-	novels, err := model.FindNovelsWithStyle(db, tag.ID, op)
-	if err != nil {
-		return ServerError
-	}
-	if novels == nil {
+	if novel == nil {
 		return RecodeNotFound
 	}
-	var data = []interface{}{}
-	tags, err := model.GetTags(db)
-	if err != nil {
+	//处理删除任务
+	tx := db.Begin()
+	if tx.Error != nil {
 		return ServerError
 	}
-	for k, v := range novels {
-		for _, vv := range *tags {
-			if vv.ID == v.TagID {
-				novels[k].Style = vv.TagName
-				break
-			}
+	defer func() {
+		if err != nil {
+			tx.Commit()
+		} else {
+			tx.Rollback()
 		}
-		if novels[k].Style == "" {
-			novels[k].Style = "其他"
-		}
+	}()
+	if err = db.Exec("DELETE FROM novels WHERE id = ?", novel.ID).Error; err != nil {
+		return ServerError
 	}
-	for _, v := range novels {
-		data = append(data, v.Todata(false))
+	if err = db.Exec("DELETE FROM chapters WHERE novel_id = ?", novel.ID).Error; err != nil {
+		return ServerError
 	}
-	nextPage := 0
-	if len(novels) >= op.Count {
-		nextPage = op.Page + 1
+	if err = db.Exec("DELETE FROM tasks WHERE t_type = 0 AND url = ?", novel.Url).Error; err != nil {
+		return ServerError
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
-		"next": nextPage,
-		"data": data,
+		"data": "ok",
 	})
 }
 
