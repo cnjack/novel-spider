@@ -4,12 +4,11 @@ import "github.com/jinzhu/gorm"
 
 type Task struct {
 	gorm.Model
-	TType       TaskType   `sql:"ttype"`
-	Url         string     `sql:"url"`
-	Status      TaskStatus `sql:"status"`
-	Times       int        `sql:"times"`
-	TargetID    uint       `sql:"target_id"`
-	TargetField string     `sql:"targetfield"`
+	TType    TaskType   `sql:"ttype"`
+	Url      string     `sql:"url"`
+	Status   TaskStatus `sql:"status"`
+	Times    int        `sql:"times"`
+	TargetID uint       `sql:"target_id"`
 }
 
 type TaskType uint8
