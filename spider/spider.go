@@ -23,6 +23,7 @@ type Search struct {
 	Name       string
 	SearchName string
 	From       string
+	Novel      *Novel
 }
 
 type Spider interface {

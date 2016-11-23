@@ -7,6 +7,7 @@ import (
 
 	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
+	"sync"
 )
 
 type SnwxSearch struct {
@@ -34,6 +35,7 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		return "", err
 	}
 	var searchs = []*Search{}
+	var wg = sync.WaitGroup{}
 	doc.Find(".result").Each(func(i int, selection *goquery.Selection) {
 		var b bool
 		d := selection.Find(".c-title a")
@@ -43,14 +45,27 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		if !b {
 			return
 		}
-		filter := &SnwxNovel{}
+		filter := &SnwxNovel{WithOutChapters:true}
 		if !filter.Match(from) {
 			return
 		}
 		search.SearchName = d.Text()
-		search.From = filter.Url.String()
+		search.From = from
 		search.Name = s.NovelName
+		go func() {
+			wg.Add(1)
+			defer func() {
+				wg.Done()
+			}()
+			n , err := filter.Gain()
+			if err != nil {
+				return
+			}
+			novel := n.(Novel)
+			search.Novel = &novel
+		}()
 		searchs = append(searchs, &search)
 	})
+	wg.Wait()
 	return searchs, nil
 }
