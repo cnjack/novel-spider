@@ -25,5 +25,6 @@ func TestSnwxSearch_Gain(t *testing.T) {
 		assert.Equal(t, true, b2)
 		assert.NotNil(t, searchs)
 		assert.Equal(t, "http://www.snwx.com/book/0/381/", searchsStruct[0].From)
+		assert.Equal(t, "校园绝品狂徒", searchsStruct[0].Novel.Title)
 	}
 }

@@ -9,10 +9,11 @@ import (
 )
 
 type SnwxNovel struct {
-	Url      *url.URL
-	BookID   string
-	StyleMap *map[string]string
-	Data     interface{}
+	Url             *url.URL
+	BookID          string
+	StyleMap        *map[string]string
+	WithOutChapters bool
+	Data            interface{}
 }
 
 func (s *SnwxNovel) Name() string {
@@ -111,24 +112,20 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	is := strings.Split(introString, "：")
-	if len(is) > 1 {
-		iss := strings.Split(is[1], "<br>")
-		if len(iss) > 0 {
-			novel.Introduction = iss[0]
-		}
-	}
+	novel.Introduction = introString
 
-	doc.Find("div#list dl dd").Each(func(i int, s *goquery.Selection) {
-		cp := &Chapter{}
-		cp.Title = s.Find("a").Text()
-		cp.Index = uint(i)
-		from, b := s.Find("a").Attr("href")
-		if !b {
-			return
-		}
-		cp.From = u.String() + from
-		novel.Chapter = append(novel.Chapter, cp)
-	})
+	if !snwx.WithOutChapters {
+		doc.Find("div#list dl dd").Each(func(i int, s *goquery.Selection) {
+			cp := &Chapter{}
+			cp.Title = s.Find("a").Text()
+			cp.Index = uint(i)
+			from, b := s.Find("a").Attr("href")
+			if !b {
+				return
+			}
+			cp.From = u.String() + from
+			novel.Chapter = append(novel.Chapter, cp)
+		})
+	}
 	return novel, nil
 }

@@ -2,9 +2,10 @@ package spider_test
 
 import (
 	"testing"
-
+	"log"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/stretchr/testify/assert"
+
 )
 
 const testNovelUrl = "http://www.snwx.com/book/0/381/"
@@ -20,6 +21,7 @@ func TestSnwxNovel_Gain(t *testing.T) {
 	b := s.Match(testNovelUrl)
 	novel, err := s.Gain()
 	novelStruct, b2 := novel.(spider.Novel)
+	log.Println(novelStruct.Introduction)
 	if assert.NoError(t, err) {
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
