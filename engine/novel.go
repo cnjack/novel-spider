@@ -18,6 +18,7 @@ import (
 var w = sync.WaitGroup{}
 
 func Spider() {
+	go ChapterInit()
 	if config.GetSpiderConfig().StopSingle {
 		return
 	}
@@ -43,7 +44,12 @@ func RunATask() {
 		RunATask()
 	}
 	log.Printf("INFO: getTask ok; task id: %d", t.ID)
-	runTask(t)
+	err = runTask(t)
+	if err != nil {
+		t.ChangeTaskStatus(model.TaskStatusFail)
+	} else {
+		t.ChangeTaskStatus(model.TaskStatusOk)
+	}
 	if config.GetSpiderConfig().StopSingle {
 		return
 	}
@@ -60,12 +66,7 @@ var StyleMap = map[string]string{
 	"其他小说": "其他",
 }
 
-func runTask(t *model.Task) (err error) {
-	defer func() {
-		if err != nil {
-			t.ChangeTaskStatus(model.TaskStatusFail)
-		}
-	}()
+func runTask(t *model.Task) error {
 	spiders := []spider.Spider{
 		&spider.SnwxChapter{},
 		&spider.SnwxNovel{StyleMap: &StyleMap},
@@ -100,7 +101,7 @@ func flashTask(t *model.Task, data interface{}) (err error) {
 	default:
 		return errors.New("unknown task")
 	}
-	return nil
+	return err
 }
 
 type NovelChapters []NovelChapter
@@ -123,7 +124,7 @@ type NovelChapter struct {
 
 var stylemap map[string]int
 
-func flashNovelTask(t *model.Task, data interface{}) error {
+func flashNovelTask(_ *model.Task, data interface{}) error {
 	novel, ok := data.(spider.Novel)
 	if !ok {
 		return errors.New("get the data error")
@@ -143,7 +144,7 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 			stylemap[v.TagName] = v.ID
 		}
 	}
-	if err := db.Model(dbNovel).Where("title = ? AND url = ? AND auth = ?", novel.Title, novel.From, novel.Auth).Find(dbNovel).Error; err != nil {
+	if err = db.Model(dbNovel).Where("title = ? AND url = ? AND auth = ?", novel.Title, novel.From, novel.Auth).Find(dbNovel).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return err
 		}
@@ -203,9 +204,7 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 					TargetID: ncp.ID,
 				}
 				//创建新的任务
-				if err := db.Model(ntask).Create(ntask).Error; err != nil {
-					return err
-				}
+				ct.Push(ntask)
 				NewNovelChapters = append(NewNovelChapters, NovelChapter{
 					Title:     c.Title,
 					Index:     c.Index,
@@ -224,7 +223,7 @@ func flashNovelTask(t *model.Task, data interface{}) error {
 	if err := db.Model(dbNovel).Update(dbNovel).Error; err != nil {
 		return err
 	}
-	return t.ChangeTaskStatus(model.TaskStatusOk)
+	return
 }
 
 func flashChapterTask(t *model.Task, data interface{}) error {
@@ -239,7 +238,7 @@ func flashChapterTask(t *model.Task, data interface{}) error {
 	if err := db.Model(&model.Chapter{}).Where("id = ?", t.TargetID).Update(map[string]interface{}{"data": chapterString, "status": 1}).Error; err != nil {
 		return err
 	}
-	return t.ChangeTaskStatus(model.TaskStatusOk)
+	return
 }
 
 func getTask() (task *model.Task, err error) {
