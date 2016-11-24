@@ -1,11 +1,11 @@
 package spider_test
 
 import (
-	"testing"
 	"log"
+	"testing"
+
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/stretchr/testify/assert"
-
 )
 
 const testNovelUrl = "http://www.snwx.com/book/0/381/"

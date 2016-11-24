@@ -1,61 +1,53 @@
 package engine
 
 import (
-	"container/heap"
-	"git.oschina.net/cnjack/go-task/task"
-	"git.oschina.net/cnjack/novel-spider/config"
-	"git.oschina.net/cnjack/novel-spider/mq"
 	"log"
 	"sync"
+	"time"
+
+	"git.oschina.net/cnjack/novel-spider/config"
+	"git.oschina.net/cnjack/novel-spider/model"
+	"git.oschina.net/cnjack/novel-spider/mq"
 )
 
-type ChaperTask struct {
-	q *mq.Queue
-	w *sync.WaitGroup
+var q = mq.New(0)
+
+type task struct {
 }
 
-var ct *ChaperTask
-
-func ChapterInit() *ChaperTask {
-	ct := &ChaperTask{}
-	ct.q = &mq.Queue{}
-	return ct
-}
-
-func (c *ChaperTask) Push(task interface{}) {
-	heap.Push(c.q, task)
-}
-
-func (c *ChaperTask) Pop() interface{} {
-	return heap.Pop(c.q)
-}
-
-func (c *ChaperTask) Run() {
-	c.w = &sync.WaitGroup{}
+func Run() {
+	var wg = sync.WaitGroup{}
+	var t task
 	for i := 0; i < config.GetSpiderConfig().MaxProcess; i++ {
-		w.Add(1)
-		c.Process()
+		wg.Add(1)
+		go t.Process()
 	}
-	w.Wait()
+	wg.Wait()
 }
 
-func (c *ChaperTask) Process() {
-	defer func() {
-		w.Done()
-	}()
-	taskI := c.Pop()
-	task, ok := taskI.(*task.Task)
-	if !ok {
-		log.Printf("INFO: getTask error", taskI)
-		c.Process()
+func (t task) Process() {
+	if q.IsEmpty() {
+		time.Sleep(1 * time.Second)
+		t.Process()
 	}
-	err := runTask(task)
+	taskI, err := q.GetNoWait()
+	if err != nil {
+		log.Println("INFO: getTask error:", err)
+		t.Process()
+	}
+	task, ok := taskI.(*model.Task)
+	if !ok {
+		log.Println("INFO: getTask error not right")
+		t.Process()
+	}
+	err = runTask(task)
 	if err != nil {
 		//记录日志
-		c.Push(task)
+		log.Println("INFO: runTask error", err)
+		q.PutNoWait(task)
 	}
 	if config.GetSpiderConfig().StopSingle {
 		return
 	}
-	c.Process()
+	t.Process()
 }
