@@ -18,7 +18,7 @@ import (
 var w = sync.WaitGroup{}
 
 func Spider() {
-	go ChapterInit()
+	go Run()
 	if config.GetSpiderConfig().StopSingle {
 		return
 	}
@@ -192,7 +192,6 @@ func flashNovelTask(_ *model.Task, data interface{}) error {
 					Status:  0,
 					Url:     c.From,
 				}
-
 				if err := db.Model(ncp).Create(ncp).Error; err != nil {
 					return err
 				}
@@ -204,7 +203,7 @@ func flashNovelTask(_ *model.Task, data interface{}) error {
 					TargetID: ncp.ID,
 				}
 				//创建新的任务
-				ct.Push(ntask)
+				q.PutNoWait(ntask)
 				NewNovelChapters = append(NewNovelChapters, NovelChapter{
 					Title:     c.Title,
 					Index:     c.Index,
@@ -223,7 +222,7 @@ func flashNovelTask(_ *model.Task, data interface{}) error {
 	if err := db.Model(dbNovel).Update(dbNovel).Error; err != nil {
 		return err
 	}
-	return
+	return nil
 }
 
 func flashChapterTask(t *model.Task, data interface{}) error {
@@ -238,7 +237,7 @@ func flashChapterTask(t *model.Task, data interface{}) error {
 	if err := db.Model(&model.Chapter{}).Where("id = ?", t.TargetID).Update(map[string]interface{}{"data": chapterString, "status": 1}).Error; err != nil {
 		return err
 	}
-	return
+	return nil
 }
 
 func getTask() (task *model.Task, err error) {

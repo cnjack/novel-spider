@@ -5,9 +5,10 @@ import (
 
 	"fmt"
 
+	"sync"
+
 	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
-	"sync"
 )
 
 type SnwxSearch struct {
@@ -45,7 +46,7 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		if !b {
 			return
 		}
-		filter := &SnwxNovel{WithOutChapters:true}
+		filter := &SnwxNovel{WithOutChapters: true}
 		if !filter.Match(from) {
 			return
 		}
@@ -57,7 +58,7 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 			defer func() {
 				wg.Done()
 			}()
-			n , err := filter.Gain()
+			n, err := filter.Gain()
 			if err != nil {
 				return
 			}
