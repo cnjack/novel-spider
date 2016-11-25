@@ -23,6 +23,7 @@ type MysqlConfig struct {
 type SpiderConfig struct {
 	StopSingle bool
 	MaxProcess int
+	NovelMaxProcess int
 }
 
 var (
@@ -60,6 +61,10 @@ func load() {
 	s.MaxProcess, err = config.Int("spider", "max_process")
 	if err != nil {
 		s.MaxProcess = 50
+	}
+	s.NovelMaxProcess, err = config.Int("spider", "novel_max_process")
+	if err != nil {
+		s.MaxProcess = 3
 	}
 	m.DSN, err = config.GetValue("mysql", "dsn")
 	if err != nil {

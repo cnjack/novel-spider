@@ -40,7 +40,7 @@ func (t task) Process() {
 		log.Println("INFO: getTask error not right")
 		t.Process()
 	}
-	err = runTask(task)
+	err = RunTask(task)
 	if err != nil {
 		//记录日志
 		log.Println("INFO: runTask error", err)

@@ -22,7 +22,7 @@ func Spider() {
 	if config.GetSpiderConfig().StopSingle {
 		return
 	}
-	for i := 0; i < config.GetSpiderConfig().MaxProcess; i++ {
+	for i := 0; i < config.GetSpiderConfig().NovelMaxProcess; i++ {
 		w.Add(1)
 		go RunATask()
 	}
@@ -44,7 +44,7 @@ func RunATask() {
 		RunATask()
 	}
 	log.Printf("INFO: getTask ok; task id: %d", t.ID)
-	err = runTask(t)
+	err = RunTask(t)
 	if err != nil {
 		t.ChangeTaskStatus(model.TaskStatusFail)
 	} else {
@@ -66,7 +66,7 @@ var StyleMap = map[string]string{
 	"其他小说": "其他",
 }
 
-func runTask(t *model.Task) error {
+func RunTask(t *model.Task) error {
 	spiders := []spider.Spider{
 		&spider.SnwxChapter{},
 		&spider.SnwxNovel{StyleMap: &StyleMap},
