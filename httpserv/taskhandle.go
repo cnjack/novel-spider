@@ -14,7 +14,36 @@ type PostSearchParam struct {
 	Title string `json:"title"`
 }
 
-func postSearch(c echo.Context) error {
+func postSearchLocal(c echo.Context) error {
+	postSearchParam := &PostSearchParam{}
+	err := c.Bind(postSearchParam)
+	if err != nil {
+		return ParamError
+	}
+	op := c.Get(PageOptionKey).(*model.PageOption)
+	if postSearchParam.Title == "" {
+		return ParamError
+	}
+	db, err := model.MustGetDB()
+	if err != nil {
+		return ServerError
+	}
+	novels, err := model.SearchByTitleOrAuth(db, postSearchParam.Title, postSearchParam.Title, op)
+	if err != nil {
+		return ServerError
+	}
+	nextPage := 0
+	if len(novels) >= op.Count {
+		nextPage = op.Page + 1
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code": 0,
+		"data": novels,
+		"next": nextPage,
+	})
+}
+
+func postSearchRemote(c echo.Context) error {
 	postSearchParam := &PostSearchParam{}
 	err := c.Bind(postSearchParam)
 	if err != nil {
@@ -96,6 +125,6 @@ func postNovelTask(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
-		"data": db.RowsAffected,
+		"data": task.ID,
 	})
 }

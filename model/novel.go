@@ -37,6 +37,24 @@ func String2NovelStatus(statusString string) NovelStatus {
 	return NovelCompleted
 }
 
+type SearchNovel struct {
+	ID    uint   `sql:"id" json:"id"`
+	Title string `sql:"title" json:"title"`
+	Auth  string `sql:"auth" json:"auth"`
+}
+
+func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) ([]SearchNovel, error) {
+	var ns []SearchNovel
+	var err error
+	if op == nil {
+		op = defaultPageOption
+	}
+	if err = db.Table("novels").Where("title LIKE ? OR auth = ?", "%"+title+"%", auth).Select([]string{"title", "id", "auth"}).Limit(op.Count).Offset(op.Page * op.Count).Order("id desc").Find(&ns).Error; err != nil {
+		return nil, err
+	}
+	return ns, nil
+}
+
 func (s NovelStatus) Tostring() string {
 	switch s {
 	case NovelSerializing:
