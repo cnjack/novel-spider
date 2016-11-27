@@ -72,7 +72,7 @@ func getStyleNovels(c echo.Context) error {
 	if err != nil {
 		return ParamError
 	}
-	if styleID <= 0 {
+	if styleID < 0 {
 		return ParamError
 	}
 	db, err := model.MustGetDB()
