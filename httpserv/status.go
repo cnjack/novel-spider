@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"git.oschina.net/cnjack/novel-spider/model"
-	"github.com/cnjack/monitor"
 )
 
 type Status struct {
@@ -15,7 +14,6 @@ type Status struct {
 	Now               string      `json:"now"`
 	SuccessTasks      int         `json:"success_tasks"`
 	NovelNum          int         `json:"novel_num"`
-	SystemStatus      interface{} `json:"system_status"`
 }
 
 var status = Status{}
@@ -49,7 +47,6 @@ func ReloadStatus() {
 			status.RunningTasks, _ = model.CountTasks(model.TaskStatusRunning)
 			status.PrepareTasks, _ = model.CountTasks(model.TaskStatusPrepare, model.TaskStatusFail)
 			status.SuccessTasks, _ = model.CountTasks(model.TaskStatusOk)
-			status.SystemStatus = monitor.Monitor()
 		}
 	}()
 	go func() {
@@ -68,6 +65,5 @@ func ReloadStatus() {
 	status.PrepareTasks, _ = model.CountTasks(model.TaskStatusPrepare, model.TaskStatusFail)
 	status.SuccessTasks, _ = model.CountTasks(model.TaskStatusOk)
 	status.NovelNum, _ = model.CountNovel()
-	status.SystemStatus = monitor.Monitor()
 	statuss = appendStatus(statuss, status)
 }
