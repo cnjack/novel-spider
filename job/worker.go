@@ -112,12 +112,8 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 			stylemap[v.TagName] = v.ID
 		}
 	}
-	if err = db.Model(dbNovel).Where("title = ? AND url = ? AND auth = ?", novel.Title, novel.From, novel.Auth).Find(dbNovel).Error; err != nil {
-		if err != gorm.ErrRecordNotFound {
-			return err
-		}
-	}
-	if dbNovel.ID == 0 {
+
+	if t.TargetID == 0 {
 		cover, err := tool.UploadFromUrl(novel.Cover)
 		if err != nil {
 			cover = novel.Cover
@@ -136,6 +132,10 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 			if ok {
 				dbNovel.TagID = tag
 			}
+		}
+		dbNovel.Status = model.NovelCompleted
+		if novel.Status == "连载中" {
+			dbNovel.Status = model.NovelSerializing
 		}
 		if err = db.Model(dbNovel).Create(dbNovel).Error; err != nil {
 			return err
@@ -187,7 +187,7 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 	NovelChaptersJsonString, _ := json.Marshal(NovelChapters)
 	dbNovel.Chapter = string(NovelChaptersJsonString)
 	//更新章节
-	if err = db.Model(dbNovel).Update(dbNovel).Error; err != nil {
+	if err = db.Model(dbNovel).Select([]string{"update_at", "chapter"}).Update(dbNovel).Error; err != nil {
 		return err
 	}
 	if t.ID != 0 {
@@ -197,11 +197,14 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 			return t.ChangeTaskStatus(model.TaskStatusPrepare)
 		}
 	} else {
-		err = db.Model(&model.Task{}).Create(t).Error
-		if err != nil {
-			log.Println("create task err", err)
+		if dbNovel.Status != model.NovelCompleted {
+			t.TargetID = dbNovel.ID
+			err = db.Model(&model.Task{}).Create(t).Error
+			if err != nil {
+				log.Println("create task err", err)
+			}
+			return nil
 		}
-		return nil
 	}
 
 	return nil
