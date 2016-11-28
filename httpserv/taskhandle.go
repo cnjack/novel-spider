@@ -113,7 +113,7 @@ func postNovelTask(c echo.Context) error {
 		Times:  -1,
 	}
 	var exist = 0
-	if err := db.Model(&model.Novel{}).Where("url = ?", postTaskParam.Url).Count(&exist).Error;err != nil {
+	if err := db.Model(&model.Novel{}).Where("url = ?", postTaskParam.Url).Count(&exist).Error; err != nil {
 		return ServerError
 	}
 	if exist > 0 {
@@ -122,6 +122,6 @@ func postNovelTask(c echo.Context) error {
 	job.PublishTask(task)
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
-		"data": task.ID,
+		"data": "ok",
 	})
 }
