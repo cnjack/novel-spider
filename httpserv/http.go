@@ -21,8 +21,6 @@ func Http() {
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 		AllowOrigins: []string{"*"},
 	}))
-	e.Use(middleware.Gzip())
-	e.Use(middleware.BodyLimit("1M"))
 	e.Use(middleware.Logger())
 	e.Use(ErrorHandle)
 	e.Use(binder.BindBinder(e))
