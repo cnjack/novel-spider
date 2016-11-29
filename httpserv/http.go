@@ -1,6 +1,8 @@
 package httpserv
 
 import (
+	"net/http"
+	_ "net/http/pprof"
 	"time"
 
 	"git.oschina.net/cnjack/novel-spider/config"
@@ -15,7 +17,9 @@ var (
 
 func Http() {
 	e := echo.New()
-
+	go func() {
+		http.ListenAndServe(":6060", nil)
+	}()
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},

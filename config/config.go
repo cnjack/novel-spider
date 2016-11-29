@@ -21,8 +21,8 @@ type MysqlConfig struct {
 }
 
 type SpiderConfig struct {
-	StopSingle bool
-	MaxProcess int
+	StopSingle      bool
+	MaxProcess      int
 	NovelMaxProcess int
 }
 
