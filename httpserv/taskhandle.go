@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"git.oschina.net/cnjack/novel-spider/job"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
@@ -112,19 +112,16 @@ func postNovelTask(c echo.Context) error {
 		Status: model.TaskStatusPrepare,
 		Times:  -1,
 	}
-	var exist = &model.Task{}
-	err = db.Model(exist).Where("url = ?", postTaskParam.Url).First(exist).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	var exist = 0
+	if err := db.Model(&model.Novel{}).Where("url = ?", postTaskParam.Url).Count(&exist).Error; err != nil {
 		return ServerError
 	}
-	if err != gorm.ErrRecordNotFound {
+	if exist > 0 {
 		return TaskIsRepeated
 	}
-	if err := db.Model(task).Create(task).Error; err != nil {
-		return ServerError
-	}
+	job.PublishTask(task)
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
-		"data": task.ID,
+		"data": "ok",
 	})
 }

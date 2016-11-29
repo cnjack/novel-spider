@@ -33,12 +33,6 @@
 			"revisionTime": "2016-11-19T16:47:49Z"
 		},
 		{
-			"checksumSHA1": "em14TGjAfvOo8wcn0Sh03IdScpE=",
-			"path": "github.com/cnjack/monitor",
-			"revision": "193f030c6cc62f5544e7f2c9ce93133e39316cea",
-			"revisionTime": "2016-11-15T06:58:54Z"
-		},
-		{
 			"checksumSHA1": "Lf3uUXTkKK5DJ37BxQvxO1Fq+K8=",
 			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",

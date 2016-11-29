@@ -1,7 +1,7 @@
 fmt:
 	goimports -w -l ./model
 	goimports -w -l ./spider
-	goimports -w -l ./engine
+	goimports -w -l ./job
 	goimports -w -l ./tool
 	goimports -w -l ./config
 	goimports -w -l ./httpserv

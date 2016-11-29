@@ -11,10 +11,6 @@ import (
 
 func getNovelDetails(c echo.Context) error {
 	idString := c.Param("id")
-	hasChapter := false
-	if len(c.QueryParam("chapter")) > 0 {
-		hasChapter = true
-	}
 	id, err := strconv.Atoi(idString)
 	if err != nil || id == 0 {
 		return ParamError
@@ -35,9 +31,17 @@ func getNovelDetails(c echo.Context) error {
 	if novel == nil {
 		return RecodeNotFound
 	}
+	chapters, err := novel.ChapterTodata()
+	if err != nil {
+		return ServerError
+	}
+	if len(chapters) == 0 {
+		return ServerError
+	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": novel.Todata(hasChapter),
+		"code":      0,
+		"data":      novel.Todata(false),
+		"first_cid": chapters[0].ChapterID,
 	})
 }
 
@@ -102,9 +106,13 @@ func getNovelChapters(c echo.Context) error {
 	if novel == nil {
 		return RecodeNotFound
 	}
+	chapters, err := novel.ChapterTodata()
+	if err != nil {
+		return ServerError
+	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code": 0,
-		"data": novel.ChapterTodata(),
+		"data": chapters,
 	})
 }
 

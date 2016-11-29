@@ -89,6 +89,17 @@ func FirstNovelByID(db *gorm.DB, id uint) (n *Novel, err error) {
 	return
 }
 
+func FirstNovelByIDWithoutChapters(db *gorm.DB, id uint) (n *Novel, err error) {
+	n = &Novel{}
+	if err = db.Model(n).Select([]string{"id", "title", "auth", "tag_id", "cover", "status", "introduction", "url"}).Where("id = ?", id).First(n).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return
+}
+
 func FindNovelByAuth(db *gorm.DB, auth string, op *PageOption) (ns []Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
@@ -132,7 +143,7 @@ func (n *Novel) Todata(more bool) interface{} {
 		"url":          n.Url,
 	}
 	if more {
-		resp["chapters"] = n.ChapterTodata()
+		resp["chapters"], _ = n.ChapterTodata()
 	}
 	return resp
 }
@@ -144,13 +155,13 @@ type NovelChapter struct {
 	Url       string `json:"url"`
 }
 
-func (n *Novel) ChapterTodata() interface{} {
+func (n *Novel) ChapterTodata() ([]NovelChapter, error) {
 	novelChapters := []NovelChapter{}
 	if n.Chapter != "" {
 		err := json.Unmarshal([]byte(n.Chapter), &novelChapters)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return novelChapters
+	return novelChapters, nil
 }
