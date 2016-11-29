@@ -1,59 +1,20 @@
-package engine
+package job
 
 import "errors"
 
 import (
 	"encoding/json"
 	"log"
-	"sync"
-	"time"
 
-	"git.oschina.net/cnjack/novel-spider/config"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"git.oschina.net/cnjack/novel-spider/tool"
 	"github.com/jinzhu/gorm"
 )
 
-var w = sync.WaitGroup{}
-
 func Spider() {
 	go Run()
-	if config.GetSpiderConfig().StopSingle {
-		return
-	}
-	for i := 0; i < config.GetSpiderConfig().NovelMaxProcess; i++ {
-		w.Add(1)
-		go RunATask()
-	}
-	w.Wait()
-}
-
-func RunATask() {
-	defer func() {
-		w.Done()
-	}()
-
-	t, err := getTask()
-	if err != nil {
-		if err != gorm.ErrRecordNotFound {
-			log.Printf("ERROR: getTask ERROR; ERRstring: %s", err.Error())
-		}
-		//
-		time.Sleep(30 * time.Second)
-		RunATask()
-	}
-	log.Printf("INFO: getTask ok; task id: %d", t.ID)
-	err = RunTask(t)
-	if err != nil {
-		t.ChangeTaskStatus(model.TaskStatusFail)
-	} else {
-		t.ChangeTaskStatus(model.TaskStatusOk)
-	}
-	if config.GetSpiderConfig().StopSingle {
-		return
-	}
-	RunATask()
+	UpdateNovelTask()
 }
 
 var StyleMap = map[string]string{
@@ -124,18 +85,25 @@ type NovelChapter struct {
 
 var stylemap map[string]int
 
-func flashNovelTask(_ *model.Task, data interface{}) error {
+func flashNovelTask(t *model.Task, data interface{}) (err error) {
+	var db *gorm.DB
+	defer func() {
+		if err != nil {
+			t.ChangeTaskStatus(model.TaskStatusFail)
+		}
+	}()
 	novel, ok := data.(spider.Novel)
 	if !ok {
 		return errors.New("get the data error")
 	}
 	dbNovel := &model.Novel{}
-	db, err := model.MustGetDB()
+	db, err = model.MustGetDB()
 	if err != nil {
 		return err
 	}
 	if stylemap == nil {
-		tags, err := model.GetTags(db)
+		var tags *[]model.Tags
+		tags, err = model.GetTags(db)
 		if err != nil {
 			return err
 		}
@@ -144,12 +112,8 @@ func flashNovelTask(_ *model.Task, data interface{}) error {
 			stylemap[v.TagName] = v.ID
 		}
 	}
-	if err = db.Model(dbNovel).Where("title = ? AND url = ? AND auth = ?", novel.Title, novel.From, novel.Auth).Find(dbNovel).Error; err != nil {
-		if err != gorm.ErrRecordNotFound {
-			return err
-		}
-	}
-	if dbNovel.ID == 0 {
+
+	if t.TargetID == 0 {
 		cover, err := tool.UploadFromUrl(novel.Cover)
 		if err != nil {
 			cover = novel.Cover
@@ -169,13 +133,17 @@ func flashNovelTask(_ *model.Task, data interface{}) error {
 				dbNovel.TagID = tag
 			}
 		}
-		if err := db.Model(dbNovel).Create(dbNovel).Error; err != nil {
+		dbNovel.Status = model.NovelCompleted
+		if novel.Status == "连载中" {
+			dbNovel.Status = model.NovelSerializing
+		}
+		if err = db.Model(dbNovel).Create(dbNovel).Error; err != nil {
 			return err
 		}
 	}
 	NovelChapters := NovelChapters{}
 	if dbNovel.Chapter != "" {
-		err := json.Unmarshal([]byte(dbNovel.Chapter), &NovelChapters)
+		err = json.Unmarshal([]byte(dbNovel.Chapter), &NovelChapters)
 		if err != nil {
 			return err
 		}
@@ -219,10 +187,31 @@ func flashNovelTask(_ *model.Task, data interface{}) error {
 	NovelChaptersJsonString, _ := json.Marshal(NovelChapters)
 	dbNovel.Chapter = string(NovelChaptersJsonString)
 	//更新章节
-	if err := db.Model(dbNovel).Update(dbNovel).Error; err != nil {
+	if err = db.Model(dbNovel).Select([]string{"update_at", "chapter"}).Update(dbNovel).Error; err != nil {
 		return err
 	}
+	if t.ID != 0 {
+		if dbNovel.Status == model.NovelCompleted {
+			return t.ChangeTaskStatus(model.TaskStatusOk)
+		} else {
+			return t.ChangeTaskStatus(model.TaskStatusPrepare)
+		}
+	} else {
+		if dbNovel.Status != model.NovelCompleted {
+			t.TargetID = dbNovel.ID
+			err = db.Model(&model.Task{}).Create(t).Error
+			if err != nil {
+				log.Println("create task err", err)
+			}
+			return nil
+		}
+	}
+
 	return nil
+}
+
+func PublishTask(t *model.Task) {
+	q.PutNoWait(t)
 }
 
 func flashChapterTask(t *model.Task, data interface{}) error {
@@ -238,30 +227,4 @@ func flashChapterTask(t *model.Task, data interface{}) error {
 		return err
 	}
 	return nil
-}
-
-func getTask() (task *model.Task, err error) {
-	db, err := model.MustGetDB()
-	if err != nil {
-		return nil, err
-	}
-	tx := db.Begin()
-	if err = tx.Error; err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		} else {
-			tx.Commit()
-		}
-	}()
-	task = &model.Task{}
-	if err = db.Raw("SELECT * FROM tasks WHERE status IN (?, ?) AND deleted_at IS NULL ORDER BY status, id ASC LIMIT 0, 1 FOR UPDATE", model.TaskStatusPrepare, model.TaskStatusFail).Scan(task).Error; err != nil {
-		return nil, err
-	}
-	if err = tx.Model(&model.Task{}).Where("id = ?", task.ID).Updates(map[string]interface{}{"status": model.TaskStatusRunning}).Error; err != nil {
-		return nil, err
-	}
-	return
 }
