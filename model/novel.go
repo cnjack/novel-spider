@@ -43,7 +43,7 @@ type SearchNovel struct {
 	Auth  string `sql:"auth" json:"auth"`
 }
 
-func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) ([]SearchNovel, error) {
+func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) (*[]SearchNovel, error) {
 	var ns []SearchNovel
 	var err error
 	if op == nil {
@@ -52,7 +52,7 @@ func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) ([]Sea
 	if err = db.Table("novels").Where("title LIKE ? OR auth = ?", "%"+title+"%", auth).Select([]string{"title", "id", "auth"}).Limit(op.Count).Offset(op.Page * op.Count).Order("id desc").Find(&ns).Error; err != nil {
 		return nil, err
 	}
-	return ns, nil
+	return &ns, nil
 }
 
 func (s NovelStatus) Tostring() string {
@@ -130,22 +130,35 @@ func FindNovelsWithStyle(db *gorm.DB, styleID int, op *PageOption) (ns []Novel, 
 	return
 }
 
-func (n *Novel) Todata(more bool) interface{} {
-	resp := map[string]interface{}{
-		"id":           n.ID,
-		"create_at":    n.CreatedAt.Format(time.RFC3339),
-		"title":        n.Title,
-		"auth":         n.Auth,
-		"style":        n.Style,
-		"status":       n.Status,
-		"introduction": n.Introduction,
-		"cover":        n.Cover,
-		"url":          n.Url,
+type NovelData struct {
+	ID           uint            `json:"id"`
+	CreateAt     string          `json:"create_at"`
+	Title        string          `json:"title"`
+	Auth         string          `json:"auth"`
+	Style        string          `json:"style"`
+	Status       NovelStatus     `json:"status"`
+	Cover        string          `json:"cover"`
+	Introduction string          `json:"intrduction"`
+	Chapter      *[]NovelChapter `json:"chapters"`
+	Url          string          `json:"from"`
+}
+
+func (n *Novel) Todata(more bool) *NovelData {
+	resp := NovelData{
+		ID:           n.ID,
+		CreateAt:     n.CreatedAt.Format(time.RFC3339),
+		Title:        n.Title,
+		Auth:         n.Auth,
+		Style:        n.Style,
+		Status:       n.Status,
+		Introduction: n.Introduction,
+		Cover:        n.Cover,
+		Url:          n.Url,
 	}
 	if more {
-		resp["chapters"], _ = n.ChapterTodata()
+		resp.Chapter, _ = n.ChapterTodata()
 	}
-	return resp
+	return &resp
 }
 
 type NovelChapter struct {
@@ -155,7 +168,7 @@ type NovelChapter struct {
 	Url       string `json:"url"`
 }
 
-func (n *Novel) ChapterTodata() ([]NovelChapter, error) {
+func (n *Novel) ChapterTodata() (*[]NovelChapter, error) {
 	novelChapters := []NovelChapter{}
 	if n.Chapter != "" {
 		err := json.Unmarshal([]byte(n.Chapter), &novelChapters)
@@ -163,5 +176,5 @@ func (n *Novel) ChapterTodata() ([]NovelChapter, error) {
 			return nil, err
 		}
 	}
-	return novelChapters, nil
+	return &novelChapters, nil
 }

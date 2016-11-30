@@ -23,14 +23,22 @@ func FirstChapterByID(db *gorm.DB, id uint) (c *Chapter, err error) {
 	return
 }
 
-func (c *Chapter) Todata() interface{} {
-	resp := map[string]interface{}{
-		"id":       c.ID,
-		"title":    c.Title,
-		"data":     c.Data,
-		"status":   c.Status,
-		"novel_id": c.NovelID,
-		"url":      c.Url,
+type ChapterData struct {
+	ID      uint   `json:"id"`
+	Title   string `json:"title"`
+	Data    string `json:"data"`
+	Status  uint8  `json:"status"`
+	NovelID uint   `json:"novel_id"`
+	Url     string `json:"url"`
+}
+
+func (c *Chapter) Todata() *ChapterData {
+	return &ChapterData{
+		ID:      c.ID,
+		Title:   c.Title,
+		Data:    c.Data,
+		Status:  c.Status,
+		NovelID: c.NovelID,
+		Url:     c.Url,
 	}
-	return resp
 }

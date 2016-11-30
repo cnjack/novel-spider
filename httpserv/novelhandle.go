@@ -35,13 +35,17 @@ func getNovelDetails(c echo.Context) error {
 	if err != nil {
 		return ServerError
 	}
-	if len(chapters) == 0 {
+	if len(*chapters) == 0 {
 		return ServerError
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code":      0,
-		"data":      novel.Todata(false),
-		"first_cid": chapters[0].ChapterID,
+	return c.JSON(http.StatusOK, struct {
+		Code     int              `json:"code"`
+		Data     *model.NovelData `json:"data"`
+		FirstCid uint             `json:"first_cid"`
+	}{
+		Code:     0,
+		Data:     novel.Todata(false),
+		FirstCid: (*chapters)[0].ChapterID,
 	})
 }
 
@@ -83,9 +87,12 @@ func deleteNovel(c echo.Context) error {
 	if err = db.Exec("DELETE FROM tasks WHERE t_type = 0 AND url = ?", novel.Url).Error; err != nil {
 		return ServerError
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": "ok",
+	return c.JSON(http.StatusOK, struct {
+		Code int    `json:"code"`
+		Data string `json:"data"`
+	}{
+		Code: 0,
+		Data: "ok",
 	})
 }
 
@@ -110,9 +117,12 @@ func getNovelChapters(c echo.Context) error {
 	if err != nil {
 		return ServerError
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": chapters,
+	return c.JSON(http.StatusOK, struct {
+		Code int                   `json:"code"`
+		Data *[]model.NovelChapter `json:"data"`
+	}{
+		Code: 0,
+		Data: chapters,
 	})
 }
 
@@ -149,10 +159,15 @@ func getChapter(c echo.Context) error {
 	if chapter == nil {
 		return RecodeNotFound
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": chapter.Todata(),
-		"next": next,
-		"prev": prev,
+	return c.JSON(http.StatusOK, struct {
+		Code int                `json:"code"`
+		Data *model.ChapterData `json:"data"`
+		Next int                `json:"next"`
+		Prev int                `json:"prev"`
+	}{
+		Code: 0,
+		Data: chapter.Todata(),
+		Next: next,
+		Prev: prev,
 	})
 }

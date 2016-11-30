@@ -27,15 +27,21 @@ func indexHandle(c echo.Context) error {
 }
 
 func getStatus(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": status,
+	return c.JSON(http.StatusOK, struct {
+		Code int    `json:"code"`
+		Data Status `json:"data"`
+	}{
+		Code: 0,
+		Data: status,
 	})
 }
 
 func getStatuss(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": statuss,
+	return c.JSON(http.StatusOK, struct {
+		Code int      `json:"code"`
+		Data []Status `json:"data"`
+	}{
+		Code: 0,
+		Data: statuss,
 	})
 }
