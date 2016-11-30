@@ -33,13 +33,17 @@ func postSearchLocal(c echo.Context) error {
 		return ServerError
 	}
 	nextPage := 0
-	if len(novels) >= op.Count {
+	if len(*novels) >= op.Count {
 		nextPage = op.Page + 1
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": novels,
-		"next": nextPage,
+	return c.JSON(http.StatusOK, struct {
+		Code int                  `json:"code"`
+		Data *[]model.SearchNovel `json:"data"`
+		Next int                  `json:"next"`
+	}{
+		Code: 0,
+		Data: novels,
+		Next: nextPage,
 	})
 }
 
@@ -71,9 +75,12 @@ func postSearchRemote(c echo.Context) error {
 			}
 		}
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": data,
+	return c.JSON(http.StatusOK, struct {
+		Code int `json:"code"`
+		Data []*spider.Search
+	}{
+		Code: 0,
+		Data: data,
 	})
 }
 
@@ -120,8 +127,11 @@ func postNovelTask(c echo.Context) error {
 		return TaskIsRepeated
 	}
 	job.PublishTask(task)
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": "ok",
+	return c.JSON(http.StatusOK, struct {
+		Code int    `json:"code"`
+		Data string `json:"data"`
+	}{
+		Code: 0,
+		Data: "ok",
 	})
 }

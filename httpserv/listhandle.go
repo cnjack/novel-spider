@@ -21,7 +21,7 @@ func getNovels(c echo.Context) error {
 	if novels == nil {
 		return RecodeNotFound
 	}
-	var data = []interface{}{}
+	var data = []*model.NovelData{}
 	tags, err := model.GetTags(db)
 	if err != nil {
 		return ServerError
@@ -44,10 +44,14 @@ func getNovels(c echo.Context) error {
 	if len(novels) >= op.Count {
 		nextPage = op.Page + 1
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"next": nextPage,
-		"data": data,
+	return c.JSON(http.StatusOK, struct {
+		Code int                `json:"code"`
+		Next int                `json:"next"`
+		Data []*model.NovelData `json:"data"`
+	}{
+		Code: 0,
+		Next: nextPage,
+		Data: data,
 	})
 }
 
@@ -60,9 +64,12 @@ func getStyles(c echo.Context) error {
 	if err != nil {
 		return ServerError
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"data": tags,
+	return c.JSON(http.StatusOK, struct {
+		Code int           `json:"code"`
+		Data *[]model.Tags `json:"data"`
+	}{
+		Code: 0,
+		Data: tags,
 	})
 }
 
@@ -91,7 +98,7 @@ func getStyleNovels(c echo.Context) error {
 	if novels == nil {
 		return RecodeNotFound
 	}
-	var data = []interface{}{}
+	var data = []*model.NovelData{}
 	tags, err := model.GetTags(db)
 	if err != nil {
 		return ServerError
@@ -114,9 +121,13 @@ func getStyleNovels(c echo.Context) error {
 	if len(novels) >= op.Count {
 		nextPage = op.Page + 1
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code": 0,
-		"next": nextPage,
-		"data": data,
+	return c.JSON(http.StatusOK, struct {
+		Code int                `json:"code"`
+		Next int                `json:"next"`
+		Data []*model.NovelData `json:"data"`
+	}{
+		Code: 0,
+		Next: nextPage,
+		Data: data,
 	})
 }
