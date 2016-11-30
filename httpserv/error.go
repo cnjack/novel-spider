@@ -1,8 +1,9 @@
 package httpserv
 
 import (
-	"encoding/json"
 	"net/http"
+
+	json "github.com/mailru/easyjson"
 )
 
 type NightcErr struct {

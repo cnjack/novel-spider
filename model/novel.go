@@ -1,10 +1,10 @@
 package model
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	json "github.com/mailru/easyjson"
 )
 
 type Novel struct {
@@ -139,7 +139,7 @@ type NovelData struct {
 	Status       NovelStatus     `json:"status"`
 	Cover        string          `json:"cover"`
 	Introduction string          `json:"intrduction"`
-	Chapter      *[]NovelChapter `json:"chapters"`
+	Chapter      *NovelChapters `json:"chapters"`
 	Url          string          `json:"from"`
 }
 
@@ -161,6 +161,7 @@ func (n *Novel) Todata(more bool) *NovelData {
 	return &resp
 }
 
+
 type NovelChapter struct {
 	Title     string `json:"title"`
 	Index     uint   `json:"index"`
@@ -168,8 +169,11 @@ type NovelChapter struct {
 	Url       string `json:"url"`
 }
 
-func (n *Novel) ChapterTodata() (*[]NovelChapter, error) {
-	novelChapters := []NovelChapter{}
+//easyjson:json
+type NovelChapters []NovelChapter
+
+func (n *Novel) ChapterTodata() (*NovelChapters, error) {
+	novelChapters := NovelChapters{}
 	if n.Chapter != "" {
 		err := json.Unmarshal([]byte(n.Chapter), &novelChapters)
 		if err != nil {

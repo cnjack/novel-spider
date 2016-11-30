@@ -3,13 +3,13 @@ package job
 import "errors"
 
 import (
-	"encoding/json"
 	"log"
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"git.oschina.net/cnjack/novel-spider/tool"
 	"github.com/jinzhu/gorm"
+	json "github.com/mailru/easyjson"
 )
 
 func Spider() {
