@@ -1,10 +1,8 @@
 package spider
 
 import (
-	"net/url"
-
 	"fmt"
-
+	"net/url"
 	"sync"
 
 	"git.oschina.net/cnjack/downloader"
