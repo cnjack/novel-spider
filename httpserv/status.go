@@ -18,23 +18,6 @@ type Status struct {
 
 var status = Status{}
 
-func appendStatus(ss []Status, s Status) []Status {
-	if len(ss) >= 40 {
-		sss := make([]Status, len(ss))
-		for k, v := range ss {
-			if k == 0 {
-				continue
-			}
-			sss[k-1] = v
-		}
-		sss[len(ss)-1] = s
-		return sss
-	}
-	return append(ss, s)
-}
-
-var statuss = []Status{}
-
 func ReloadStatus() {
 	go func() {
 		for range time.Tick(1 * time.Second) {
@@ -54,16 +37,10 @@ func ReloadStatus() {
 			status.NovelNum, _ = model.CountNovel()
 		}
 	}()
-	go func() {
-		for range time.Tick(5 * time.Second) {
-			statuss = appendStatus(statuss, status)
-		}
-	}()
 	status.ServerStartTime = startTime.Format(time.RFC3339)
 	status.ServerTunningTime = time.Now().Sub(startTime).String()
 	status.RunningTasks, _ = model.CountTasks(model.TaskStatusRunning)
 	status.PrepareTasks, _ = model.CountTasks(model.TaskStatusPrepare, model.TaskStatusFail)
 	status.SuccessTasks, _ = model.CountTasks(model.TaskStatusOk)
 	status.NovelNum, _ = model.CountNovel()
-	statuss = appendStatus(statuss, status)
 }

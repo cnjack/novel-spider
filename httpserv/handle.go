@@ -7,9 +7,7 @@ import (
 )
 
 func WarpRouter(g *echo.Group) {
-	g.GET("/", indexHandle)
 	g.GET("/status", getStatus)
-	g.GET("/statuss", getStatuss)
 	g.GET("/novel/:id", getNovelDetails)
 	g.DELETE("/novel/:id", deleteNovel)
 	g.GET("/novels", getNovels, ParseParam)
@@ -22,10 +20,6 @@ func WarpRouter(g *echo.Group) {
 	g.GET("/chapter/:id", getChapter)
 }
 
-func indexHandle(c echo.Context) error {
-	return c.String(http.StatusOK, "")
-}
-
 func getStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, struct {
 		Code int    `json:"code"`
@@ -33,15 +27,5 @@ func getStatus(c echo.Context) error {
 	}{
 		Code: 0,
 		Data: status,
-	})
-}
-
-func getStatuss(c echo.Context) error {
-	return c.JSON(http.StatusOK, struct {
-		Code int      `json:"code"`
-		Data []Status `json:"data"`
-	}{
-		Code: 0,
-		Data: statuss,
 	})
 }
