@@ -65,6 +65,7 @@ func flashTask(t *model.Task, data interface{}) (err error) {
 	return err
 }
 
+//easyjson:json
 type NovelChapters []NovelChapter
 
 func (n NovelChapters) Has(from string) bool {

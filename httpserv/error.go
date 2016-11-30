@@ -6,6 +6,7 @@ import (
 	json "github.com/mailru/easyjson"
 )
 
+//easyjson:json
 type NightcErr struct {
 	Code     int         `json:"code"`
 	Data     interface{} `json:"data"`

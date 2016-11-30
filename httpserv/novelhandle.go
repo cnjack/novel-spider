@@ -119,7 +119,7 @@ func getNovelChapters(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, struct {
 		Code int                   `json:"code"`
-		Data *[]model.NovelChapter `json:"data"`
+		Data *model.NovelChapters `json:"data"`
 	}{
 		Code: 0,
 		Data: chapters,
