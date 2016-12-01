@@ -16,8 +16,9 @@ var q = mq.New(0)
 type task struct {
 }
 
+var wg = sync.WaitGroup{}
+
 func Run() {
-	var wg = sync.WaitGroup{}
 	var t task
 	for i := 0; i < config.GetSpiderConfig().MaxProcess; i++ {
 		wg.Add(1)
@@ -27,6 +28,9 @@ func Run() {
 }
 
 func (t task) Process() {
+	defer func(){
+		wg.Done()
+	}()
 	if q.IsEmpty() {
 		time.Sleep(1 * time.Second)
 		t.Process()
