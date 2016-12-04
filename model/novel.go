@@ -138,7 +138,7 @@ type NovelData struct {
 	Style        string          `json:"style"`
 	Status       NovelStatus     `json:"status"`
 	Cover        string          `json:"cover"`
-	Introduction string          `json:"intrduction"`
+	Introduction string          `json:"introduction"`
 	Chapter      *[]NovelChapter `json:"chapters"`
 	Url          string          `json:"from"`
 }
