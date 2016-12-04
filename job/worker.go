@@ -3,19 +3,14 @@ package job
 import "errors"
 
 import (
+	"encoding/json"
 	"log"
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"git.oschina.net/cnjack/novel-spider/tool"
 	"github.com/jinzhu/gorm"
-	json "github.com/mailru/easyjson"
 )
-
-func Spider() {
-	go Run()
-	UpdateNovelTask()
-}
 
 var StyleMap = map[string]string{
 	"玄幻小说": "玄幻",
@@ -65,7 +60,6 @@ func flashTask(t *model.Task, data interface{}) (err error) {
 	return err
 }
 
-//easyjson:json
 type NovelChapters []NovelChapter
 
 func (n NovelChapters) Has(from string) bool {
@@ -172,7 +166,10 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 					TargetID: ncp.ID,
 				}
 				//创建新的任务
-				q.PutNoWait(ntask)
+				err := PublishTask(ntask)
+				if err != nil {
+					log.Println("publish task err", err)
+				}
 				NewNovelChapters = append(NewNovelChapters, NovelChapter{
 					Title:     c.Title,
 					Index:     c.Index,
@@ -209,10 +206,6 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 	}
 
 	return nil
-}
-
-func PublishTask(t *model.Task) {
-	q.PutNoWait(t)
 }
 
 func flashChapterTask(t *model.Task, data interface{}) error {

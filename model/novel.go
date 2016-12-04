@@ -1,8 +1,8 @@
 package model
 
 import (
-	"time"
 	"encoding/json"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -160,7 +160,6 @@ func (n *Novel) Todata(more bool) *NovelData {
 	}
 	return &resp
 }
-
 
 type NovelChapter struct {
 	Title     string `json:"title"`

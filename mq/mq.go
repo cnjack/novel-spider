@@ -1,227 +1,181 @@
 package mq
 
 import (
-	"container/list"
-	"errors"
+	"encoding/json"
+	"github.com/nsqio/go-nsq"
+	"github.com/satori/go.uuid"
+	"math/rand"
 	"sync"
-	"time"
+	"log"
 )
 
-var (
-	// Queue is Empty.
-	ErrEmptyQueue = errors.New("queue is empty")
-	// Queue is Full.
-	ErrFullQueue = errors.New("queue is full")
-)
-
-type waiter chan interface{}
-
-func newWaiter() waiter {
-	w := make(chan interface{}, 1)
-	return w
+type Broker struct {
+	Addrs []string
+	sync.Mutex
+	running bool
+	p       []*nsq.Producer
+	c       []*subscriber
 }
 
-type Queue struct {
-	maxSize int
-	mutex   sync.Mutex
-	items   *list.List // store items
-	putters *list.List // store blocked Put operators
-	getters *list.List // store blocked Get operators
+type subscriber struct {
+	topic string
+	c     *nsq.Consumer
+	// handler so we can resubcribe
+	h       nsq.HandlerFunc
+	channel string
+	// concurrency
+	n int
+}
+type Handler func(Publication) error
+
+type Message struct {
+	Header map[string]string
+	Body   []byte
 }
 
-// New create a new Queue, The maxSize variable sets the max Queue size.
-// If maxSize is zero, Queue will be infinite size, and Put always no wait.
-func New(maxSize int) *Queue {
-	q := new(Queue)
-	q.mutex = sync.Mutex{}
-	q.maxSize = maxSize
-	q.items = list.New()
-	q.putters = list.New()
-	q.getters = list.New()
-	return q
+// Publication is given to a subscription handler for processing
+type Publication interface {
+	Topic() string
+	Message() *Message
+	Ack() error
 }
 
-func (q *Queue) newPutter() *list.Element {
-	w := newWaiter()
-	return q.putters.PushBack(w)
+func (p *publication) Topic() string {
+	return p.topic
 }
 
-func (q *Queue) newGetter() *list.Element {
-	w := newWaiter()
-	return q.getters.PushBack(w)
+func (p *publication) Message() *Message {
+	return p.m
 }
 
-func (q *Queue) notifyPutter(getter *list.Element) bool {
-	if getter != nil {
-		q.getters.Remove(getter)
-	}
-	if q.putters.Len() == 0 {
-		return false
-	}
-	e := q.putters.Front()
-	q.putters.Remove(e)
-	w := e.Value.(waiter)
-	w <- true
-	return true
-}
-
-func (q *Queue) notifyGetter(putter *list.Element, val interface{}) bool {
-	if putter != nil {
-		q.putters.Remove(putter)
-	}
-	if q.getters.Len() == 0 {
-		return false
-	}
-	e := q.getters.Front()
-	q.getters.Remove(e)
-	w := e.Value.(waiter)
-	w <- val
-	return true
-}
-
-func (q *Queue) clearPending() {
-	for !q.isfull() && q.putters.Len() != 0 {
-		q.notifyPutter(nil)
-	}
-	for !q.isempty() && q.getters.Len() != 0 {
-		v := q.get()
-		q.notifyGetter(nil, v)
-	}
-}
-
-func (q *Queue) get() interface{} {
-	e := q.items.Front()
-	q.items.Remove(e)
-	return e.Value
-}
-
-func (q *Queue) put(val interface{}) {
-	q.items.PushBack(val)
-}
-
-// Same as Get(-1).
-func (q *Queue) GetNoWait() (interface{}, error) {
-	return q.Get(-1)
-}
-
-// * If timeout less than 0, If Queue is empty, return (nil, ErrEmptyQueue).
-//
-// * If timeout equals to 0, block until get a value from Queue.
-//
-// * If timeout greater tahn 0, wait timeout seconds until get a value from Queue,
-// if timeout passed, return (nil, ErrEmptyQueue).
-func (q *Queue) Get(timeout float64) (interface{}, error) {
-	q.mutex.Lock()
-	q.clearPending()
-	isempty := q.isempty()
-	if timeout < 0.0 && isempty {
-		return nil, ErrEmptyQueue
-	}
-
-	if !isempty {
-		defer q.mutex.Unlock()
-		v := q.get()
-		q.notifyPutter(nil)
-		return v, nil
-	}
-
-	e := q.newGetter()
-	q.mutex.Unlock()
-	w := e.Value.(waiter)
-
-	var v interface{}
-	if timeout == 0.0 {
-		v = <-w
-	} else {
-		select {
-		case v = <-w:
-		case <-time.After(time.Duration(timeout) * time.Second):
-			return nil, ErrEmptyQueue
-		}
-	}
-	q.mutex.Lock()
-	q.notifyPutter(e)
-	q.mutex.Unlock()
-	return v, nil
-}
-
-// Same as Put(-1).
-func (q *Queue) PutNoWait(val interface{}) error {
-	return q.Put(val, -1)
-}
-
-// * If timeout less than 0, If Queue is full, return (nil, ErrFullQueue).
-//
-// * If timeout equals to 0, block until put a value into Queue.
-//
-// * If timeout greater than 0, wait timeout seconds until put a value into Queue,
-// if timeout passed, return (nil, ErrFullQueue).
-func (q *Queue) Put(val interface{}, timeout float64) error {
-	q.mutex.Lock()
-	q.clearPending()
-	isfull := q.isfull()
-	if timeout < 0.0 && isfull {
-		return ErrFullQueue
-	}
-
-	if !isfull {
-		defer q.mutex.Unlock()
-		if !q.notifyGetter(nil, val) {
-			q.put(val)
-		}
-		return nil
-	}
-
-	e := q.newPutter()
-	q.mutex.Unlock()
-	w := e.Value.(waiter)
-	if timeout == 0.0 {
-		<-w
-	} else {
-		select {
-		case <-w:
-		case <-time.After(time.Duration(timeout) * time.Second):
-			return ErrFullQueue
-		}
-	}
-
-	q.mutex.Lock()
-	if !q.notifyGetter(e, val) {
-		q.put(e)
-	}
-	q.mutex.Unlock()
+func (p *publication) Ack() error {
+	p.nm.Finish()
 	return nil
 }
 
-func (q *Queue) size() int {
-	return q.items.Len()
+type publication struct {
+	topic string
+	m     *Message
+	nm    *nsq.Message
 }
 
-// Return size of Queue.
-func (q *Queue) Size() int {
-	q.mutex.Lock()
-	defer q.mutex.Unlock()
-	return q.size()
+func (n *Broker) Connect() error {
+	n.Lock()
+	defer n.Unlock()
+	if n.running {
+		return nil
+	}
+	config := nsq.NewConfig()
+	var producers []*nsq.Producer
+	for _, addr := range n.Addrs {
+
+		p, err := nsq.NewProducer(addr, config)
+		if err != nil {
+			return err
+		}
+		producers = append(producers, p)
+	}
+
+	for _, c := range n.c {
+		channel := c.channel
+		if len(channel) == 0 {
+			channel = uuid.NewV4().String()
+		}
+		cm, err := nsq.NewConsumer(c.topic, channel, config)
+		if err != nil {
+			return err
+		}
+		cm.AddConcurrentHandlers(c.h, c.n)
+		c.c = cm
+		err = c.c.ConnectToNSQDs(n.Addrs)
+		if err != nil {
+			return err
+		}
+	}
+	n.p = producers
+	n.running = true
+	return nil
+}
+func (n *Broker) Disconnect() error {
+	n.Lock()
+	defer n.Unlock()
+
+	if !n.running {
+		return nil
+	}
+
+	// stop the producers
+	for _, p := range n.p {
+		p.Stop()
+	}
+
+	// stop the consumers
+	for _, c := range n.c {
+		c.c.Stop()
+
+		// disconnect from all nsq brokers
+		for _, addr := range n.Addrs {
+			c.c.DisconnectFromNSQD(addr)
+		}
+	}
+
+	n.p = nil
+	n.running = false
+	return nil
 }
 
-func (q *Queue) isempty() bool {
-	return (q.size() == 0)
+func (n *Broker) Publish(topic string, message *Message) error {
+	p := n.p[rand.Int()%len(n.p)]
+	b, err := json.Marshal(message)
+	if err != nil {
+		return err
+	}
+	return p.Publish(topic, b)
 }
 
-// Return true if Queue is empty.
-func (q *Queue) IsEmpty() bool {
-	q.mutex.Lock()
-	defer q.mutex.Unlock()
-	return q.isempty()
+func (n *Broker) Subscribe(topic string, handler Handler,concurrency int) (*subscriber, error) {
+	channel := uuid.NewV4().String()
+	config := nsq.NewConfig()
+	c, err := nsq.NewConsumer(topic, channel, config)
+	if err != nil {
+		log.Println("NewConsumer err: ",err)
+		return nil, err
+	}
+
+	h := nsq.HandlerFunc(func(nm *nsq.Message) error {
+		nm.DisableAutoResponse()
+		var m *Message
+		if err := json.Unmarshal(nm.Body, &m); err != nil {
+			return err
+		}
+		return handler(&publication{
+			topic: topic,
+			m:     m,
+			nm:    nm,
+		})
+	})
+
+	c.AddConcurrentHandlers(h, concurrency)
+
+	if err := c.ConnectToNSQDs(n.Addrs); err != nil {
+		log.Println("ConnectToNSQDs err: ",err)
+		return nil, err
+	}
+
+	return &subscriber{
+		topic:   topic,
+		c:       c,
+		h:       h,
+		channel: channel,
+		n:       concurrency,
+	}, nil
 }
 
-func (q *Queue) isfull() bool {
-	return (q.maxSize > 0 && q.maxSize <= q.size())
+func (s *subscriber) Topic() string {
+	return s.topic
 }
 
-// Return true if Queue is full.
-func (q *Queue) IsFull() bool {
-	q.mutex.Lock()
-	defer q.mutex.Unlock()
-	return q.isfull()
+func (s *subscriber) Unsubscribe() error {
+	s.c.Stop()
+	return nil
 }
