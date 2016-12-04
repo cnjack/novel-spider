@@ -1,8 +1,8 @@
 package job
 
 import (
+	"encoding/json"
 	"log"
-	"sync"
 	"time"
 
 	"git.oschina.net/cnjack/novel-spider/config"
@@ -11,67 +11,68 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var q = mq.New(0)
+var b *mq.Broker
 
-type task struct {
+func init() {
+	b = &mq.Broker{
+		Addrs: config.GetSpiderConfig().BrokerAddr,
+	}
+	if _, err := b.Subscribe(config.GetSpiderConfig().BrokerTopic, nTaskHandle, config.GetSpiderConfig().MaxProcess); err != nil {
+		panic(err)
+	}
+	if err := b.Connect(); err != nil {
+		panic(err)
+	}
 }
 
-var wg = sync.WaitGroup{}
-
-func Run() {
-	var t task
-	for i := 0; i < config.GetSpiderConfig().MaxProcess; i++ {
-		wg.Add(1)
-		go t.Process()
-	}
-	wg.Wait()
+func PublishTask(task *model.Task) (err error) {
+	taskString, _ := json.Marshal(task)
+	err = b.Publish(config.GetSpiderConfig().BrokerTopic, &mq.Message{
+		Header: nil,
+		Body:   []byte(taskString),
+	})
+	return
 }
 
-func (t task) Process() {
-	defer func(){
-		wg.Done()
-	}()
-	if q.IsEmpty() {
-		time.Sleep(1 * time.Second)
-		t.Process()
-	}
-	taskI, err := q.GetNoWait()
+func nTaskHandle(p mq.Publication) (err error) {
+	body := p.Message().Body
+	var task model.Task
+	err = json.Unmarshal(body, &task)
 	if err != nil {
-		log.Println("INFO: getTask error:", err)
-		t.Process()
+		//记录日志
+		log.Println("INFO: get task error", err)
 	}
-	task, ok := taskI.(*model.Task)
-	if !ok {
-		log.Println("INFO: getTask error not right")
-		t.Process()
-	}
-	err = RunTask(task)
+	err = RunTask(&task)
 	if err != nil {
 		//记录日志
 		log.Println("INFO: runTask error", err)
-		q.PutNoWait(task)
 	}
-	if config.GetSpiderConfig().StopSingle {
-		return
+	err = p.Ack()
+	if err != nil {
+		log.Println("INFO: runTask mark success error", err)
 	}
-	t.Process()
+	return nil
 }
 
 func UpdateNovelTask() {
-	t, err := getTask()
+	task, err := getTask()
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			log.Printf("ERROR: getTask ERROR; ERRstring: %s", err.Error())
 		}
 		time.Sleep(30 * time.Second)
 		UpdateNovelTask()
-	}
-	log.Printf("INFO: getTask ok; task id: %d", t.ID)
-	q.PutNoWait(t)
-	if config.GetSpiderConfig().StopSingle {
 		return
 	}
-	UpdateNovelTask()
+	log.Printf("INFO: getTask ok; task id: %d", task.ID)
+	taskString, _ := json.Marshal(task)
+	err = b.Publish(config.GetSpiderConfig().BrokerTopic, &mq.Message{
+		Header: nil,
+		Body:   []byte(taskString),
+	})
+	if err != nil {
+		log.Println("INFO: publish task err:", err)
+	}
 }
 
 func getTask() (task *model.Task, err error) {

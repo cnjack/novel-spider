@@ -21,9 +21,9 @@ type MysqlConfig struct {
 }
 
 type SpiderConfig struct {
-	StopSingle      bool
-	MaxProcess      int
-	NovelMaxProcess int
+	BrokerAddr  []string
+	BrokerTopic string
+	MaxProcess  int
 }
 
 var (
@@ -54,17 +54,14 @@ func load() {
 	h.SecretKey, _ = config.GetValue("http", "secretKey")
 	h.BucketName, _ = config.GetValue("http", "bucketName")
 	h.BucketUrl, _ = config.GetValue("http", "bucketHost")
-	s.StopSingle, err = config.Bool("spider", "stop")
-	if err != nil {
-		s.StopSingle = false
-	}
+	s.BrokerAddr = config.MustValueArray("spider", "broker_addrs", ",")
 	s.MaxProcess, err = config.Int("spider", "max_process")
 	if err != nil {
 		s.MaxProcess = 50
 	}
-	s.NovelMaxProcess, err = config.Int("spider", "novel_max_process")
+	s.BrokerTopic, err = config.GetValue("spider", "broker_topic")
 	if err != nil {
-		s.MaxProcess = 3
+		s.BrokerTopic = "novel-task"
 	}
 	m.DSN, err = config.GetValue("mysql", "dsn")
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	fmt.Println("serv running")
-	go job.Spider()
+	go job.UpdateNovelTask()
 
 	httpserv.Http()
 }
