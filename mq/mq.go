@@ -3,7 +3,6 @@ package mq
 import (
 	"encoding/json"
 	"github.com/nsqio/go-nsq"
-	"github.com/satori/go.uuid"
 	"math/rand"
 	"sync"
 	"log"
@@ -75,23 +74,6 @@ func (n *Broker) Connect() error {
 		}
 		producers = append(producers, p)
 	}
-
-	for _, c := range n.c {
-		channel := c.channel
-		if len(channel) == 0 {
-			channel = uuid.NewV4().String()
-		}
-		cm, err := nsq.NewConsumer(c.topic, channel, config)
-		if err != nil {
-			return err
-		}
-		cm.AddConcurrentHandlers(c.h, c.n)
-		c.c = cm
-		err = c.c.ConnectToNSQDs(n.Addrs)
-		if err != nil {
-			return err
-		}
-	}
 	n.p = producers
 	n.running = true
 	return nil
@@ -133,8 +115,7 @@ func (n *Broker) Publish(topic string, message *Message) error {
 	return p.Publish(topic, b)
 }
 
-func (n *Broker) Subscribe(topic string, handler Handler,concurrency int) (*subscriber, error) {
-	channel := uuid.NewV4().String()
+func (n *Broker) Subscribe(topic, channel string, handler Handler) (*subscriber, error) {
 	config := nsq.NewConfig()
 	c, err := nsq.NewConsumer(topic, channel, config)
 	if err != nil {
@@ -154,21 +135,19 @@ func (n *Broker) Subscribe(topic string, handler Handler,concurrency int) (*subs
 			nm:    nm,
 		})
 	})
-
-	c.AddConcurrentHandlers(h, concurrency)
-
+	c.AddHandler(h)
 	if err := c.ConnectToNSQDs(n.Addrs); err != nil {
 		log.Println("ConnectToNSQDs err: ",err)
 		return nil, err
 	}
-
-	return &subscriber{
+	sub := &subscriber{
 		topic:   topic,
 		c:       c,
 		h:       h,
 		channel: channel,
-		n:       concurrency,
-	}, nil
+	}
+	n.c = append(n.c, sub)
+	return sub, nil
 }
 
 func (s *subscriber) Topic() string {
