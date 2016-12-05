@@ -37,5 +37,5 @@ func Http() {
 }
 
 func init() {
-	//ReloadStatus()
+	ReloadStatus()
 }
