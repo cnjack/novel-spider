@@ -23,6 +23,7 @@ type MysqlConfig struct {
 type SpiderConfig struct {
 	BrokerAddr  []string
 	BrokerTopic string
+	BrokerChannel string
 	MaxProcess  int
 }
 
@@ -62,6 +63,10 @@ func load() {
 	s.BrokerTopic, err = config.GetValue("spider", "broker_topic")
 	if err != nil {
 		s.BrokerTopic = "novel-task"
+	}
+	s.BrokerChannel, err = config.GetValue("spider", "broker_channel")
+	if err != nil {
+		s.BrokerChannel = "novel-task-channel"
 	}
 	m.DSN, err = config.GetValue("mysql", "dsn")
 	if err != nil {
