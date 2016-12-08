@@ -17,8 +17,10 @@ func init() {
 	b = &mq.Broker{
 		Addrs: config.GetSpiderConfig().BrokerAddr,
 	}
-	if _, err := b.Subscribe(config.GetSpiderConfig().BrokerTopic, nTaskHandle, config.GetSpiderConfig().MaxProcess); err != nil {
-		panic(err)
+	for i:=0; i<config.GetSpiderConfig().MaxProcess;i++ {
+		if _, err := b.Subscribe(config.GetSpiderConfig().BrokerTopic, config.GetSpiderConfig().BrokerChannel, nTaskHandle); err != nil {
+			panic(err)
+		}
 	}
 	if err := b.Connect(); err != nil {
 		panic(err)
