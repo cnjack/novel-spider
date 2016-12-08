@@ -83,7 +83,7 @@ var stylemap map[string]int
 func flashNovelTask(t *model.Task, data interface{}) (err error) {
 	var db *gorm.DB
 	defer func() {
-		if err != nil {
+		if err != nil && t.ID != 0 {
 			t.ChangeTaskStatus(model.TaskStatusFail)
 		}
 	}()
@@ -133,6 +133,11 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 			dbNovel.Status = model.NovelSerializing
 		}
 		if err = db.Model(dbNovel).Create(dbNovel).Error; err != nil {
+			return err
+		}
+	} else {
+		dbNovel, err = model.FirstNovelByID(db, t.TargetID)
+		if err != nil {
 			return err
 		}
 	}
