@@ -26,8 +26,10 @@ func getNovelDetails(c echo.Context) error {
 	tag, err := model.FirstTagsByID(db, novel.TagID)
 	if err != nil {
 		novel.Style = "其他"
+	} else {
+		novel.Style = tag.TagName
 	}
-	novel.Style = tag.TagName
+
 	if novel == nil {
 		return RecodeNotFound
 	}
