@@ -7,6 +7,7 @@ import (
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
+	"git.oschina.net/cnjack/novel-spider/spider"
 )
 
 func getNovelDetails(c echo.Context) error {
@@ -141,6 +142,29 @@ func getChapter(c echo.Context) error {
 	chapter, err := model.FirstChapterByID(db, uint(id))
 	if err != nil {
 		return ServerError
+	}
+
+	if chapter.Data == "" {
+		searchs := []spider.Spider{
+			&spider.SnwxChapter{},
+		}
+		for _,s := range searchs {
+			if s.Match(chapter.Url) {
+				sRespInterface, err := s.Gain()
+				if err != nil {
+					return err
+				}
+				sResp, ok := sRespInterface.(string)
+				if !ok || sResp == "" {
+					return ServerError
+				}
+				chapter.Data = sResp
+				//插入数据库
+				go func(id uint, data string) {
+					model.UpdateChapterDataByID(db, id, data)
+				}(chapter.ID, sResp)
+			}
+		}
 	}
 	var next, prev = 0, 0
 	var pages = []model.Chapter{}
