@@ -162,18 +162,18 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 				if err := db.Model(ncp).Create(ncp).Error; err != nil {
 					return err
 				}
-				ntask := &model.Task{
-					TType:    model.ChapterTask,
-					Url:      c.From,
-					Status:   model.TaskStatusPrepare,
-					Times:    -1,
-					TargetID: ncp.ID,
-				}
-				//创建新的任务
-				err := PublishTask(ntask)
-				if err != nil {
-					log.Println("publish task err", err)
-				}
+				//创建新的任务 取消创建
+				//ntask := &model.Task{
+				//	TType:    model.ChapterTask,
+				//	Url:      c.From,
+				//	Status:   model.TaskStatusPrepare,
+				//	Times:    -1,
+				//	TargetID: ncp.ID,
+				//}
+				//err := PublishTask(ntask)
+				//if err != nil {
+				//	log.Println("publish task err", err)
+				//}
 				NewNovelChapters = append(NewNovelChapters, NovelChapter{
 					Title:     c.Title,
 					Index:     c.Index,
