@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"net/url"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -144,6 +146,13 @@ type NovelData struct {
 }
 
 func (n *Novel) Todata(more bool) *NovelData {
+	cover, err := url.Parse(n.Cover)
+	coverStr := ""
+	if err != nil || cover.Host != "spider-img.nightc.com" {
+		coverStr = "http://spider-img.nightc.com/cover.jpg"
+	} else {
+		coverStr = cover.String()
+	}
 	resp := NovelData{
 		ID:           n.ID,
 		CreateAt:     n.CreatedAt.Format(time.RFC3339),
@@ -152,7 +161,7 @@ func (n *Novel) Todata(more bool) *NovelData {
 		Style:        n.Style,
 		Status:       n.Status,
 		Introduction: n.Introduction,
-		Cover:        n.Cover,
+		Cover:        coverStr,
 		Url:          n.Url,
 	}
 	if more {
