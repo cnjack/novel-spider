@@ -144,6 +144,7 @@ func getChapter(c echo.Context) error {
 	}
 	var next, prev = 0, 0
 	var pages = []model.Chapter{}
+	//TODO 性能问题 需要添加索引
 	if err := db.Where("`index` IN (?, ?) AND `novel_id` = ?", chapter.Index-1, chapter.Index+1, chapter.NovelID).Find(&pages).Error; err != nil {
 		fmt.Println(err)
 		return ServerError

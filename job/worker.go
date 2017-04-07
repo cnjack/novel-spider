@@ -157,7 +157,6 @@ func flashNovelTask(t *model.Task, data interface{}) (err error) {
 					NovelID: dbNovel.ID,
 					Index:   c.Index,
 					Title:   c.Title,
-					Status:  0,
 					Url:     c.From,
 				}
 				if err := db.Model(ncp).Create(ncp).Error; err != nil {
