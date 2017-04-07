@@ -22,6 +22,14 @@ func FirstChapterByID(db *gorm.DB, id uint) (c *Chapter, err error) {
 	return
 }
 
+func UpdateChapterDataByID(db *gorm.DB, id uint, data string) (err error) {
+	c := &Chapter{}
+	if err = db.Model(c).Where("id = ?", id).Update("data", data).Error; err != nil {
+		return err
+	}
+	return
+}
+
 type ChapterData struct {
 	ID      uint   `json:"id"`
 	Title   string `json:"title"`
