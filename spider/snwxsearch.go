@@ -1,6 +1,7 @@
 package spider
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"sync"
@@ -40,7 +41,6 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		d := selection.Find(".c-title a")
 		search := Search{}
 		from, b := d.Attr("href")
-
 		if !b {
 			return
 		}
@@ -51,8 +51,9 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		search.SearchName = d.Text()
 		search.From = from
 		search.Name = s.NovelName
+
+		wg.Add(1)
 		go func() {
-			wg.Add(1)
 			defer func() {
 				wg.Done()
 			}()
@@ -66,5 +67,16 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 		searchs = append(searchs, &search)
 	})
 	wg.Wait()
-	return searchs, nil
+	if searchs == nil || len(searchs) == 0 {
+		return nil, errors.New("nothing search")
+	}
+	out := make([]*Search, 0)
+	mark := make(map[string]bool)
+	for _, v := range searchs {
+		if _, ok := mark[v.Novel.From]; !ok {
+			mark[v.Novel.From] = true
+			out = append(out, v)
+		}
+	}
+	return out, nil
 }

@@ -17,7 +17,7 @@ type SnwxNovel struct {
 }
 
 func (s *SnwxNovel) Name() string {
-	return "snwx.com"
+	return "snwx8.com"
 }
 
 func (s *SnwxNovel) Match(urlString string) bool {
@@ -27,6 +27,7 @@ func (s *SnwxNovel) Match(urlString string) bool {
 	}
 	s.Url = u
 	if u.Host != "www.snwx.com" {
+
 		return false
 	}
 	path := strings.TrimRight(u.Path, ".html")
@@ -35,7 +36,6 @@ func (s *SnwxNovel) Match(urlString string) bool {
 	if len(paths) == 0 {
 		return false
 	}
-
 	if len(paths) == 2 && paths[0] == "txt" {
 		d := downloader.NewHttpDownloaderFromUrl(u).Download()
 		if err := d.Error(); err != nil {
@@ -59,7 +59,7 @@ func (s *SnwxNovel) Match(urlString string) bool {
 		})
 		return s.Match(nurl)
 	}
-	if len(paths) == 3 && paths[0] == "book" {
+	if (len(paths) == 3 || len(paths) == 4) && paths[0] == "book" {
 		s.BookID = paths[1] + "/" + paths[2]
 		if err != nil {
 			return false
@@ -70,7 +70,7 @@ func (s *SnwxNovel) Match(urlString string) bool {
 }
 
 func (snwx *SnwxNovel) Gain() (interface{}, error) {
-	u, _ := url.Parse("http://www.snwx.com/book/" + snwx.BookID + "/")
+	u, _ := url.Parse("http://www.snwx8.com/book/" + snwx.BookID + "/")
 	d := downloader.NewHttpDownloaderFromUrl(u).Download()
 	if err := d.Error(); err != nil {
 		return "", err

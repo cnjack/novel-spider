@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"git.oschina.net/cnjack/novel-spider/job"
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/labstack/echo"
@@ -126,12 +125,14 @@ func postNovelTask(c echo.Context) error {
 	if exist > 0 {
 		return TaskIsRepeated
 	}
-	job.PublishTask(task)
+	//todo add the task
 	return c.JSON(http.StatusOK, struct {
 		Code int    `json:"code"`
 		Data string `json:"data"`
+		Task interface{}
 	}{
 		Code: 0,
 		Data: "ok",
+		Task: task,
 	})
 }
