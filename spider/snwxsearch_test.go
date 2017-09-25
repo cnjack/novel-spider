@@ -19,8 +19,9 @@ func TestSnwxSearch_Gain(t *testing.T) {
 	s := spider.SnwxSearch{}
 	b := s.Match(testSearch)
 	searchs, err := s.Gain()
-	searchsStruct, b2 := searchs.([]*spider.Search)
+
 	if assert.NoError(t, err) {
+		searchsStruct, b2 := searchs.([]*spider.Search)
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
 		assert.NotNil(t, searchs)
@@ -28,4 +29,5 @@ func TestSnwxSearch_Gain(t *testing.T) {
 		assert.Equal(t, "校园绝品狂徒", searchsStruct[0].Novel.Title)
 		assert.Equal(t, "连载中", searchsStruct[0].Novel.Status)
 	}
+
 }

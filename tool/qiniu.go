@@ -1,40 +1,42 @@
 package tool
 
 import (
-	"errors"
-
 	"git.oschina.net/cnjack/novel-spider/config"
+	"github.com/qiniu/api.v7/auth/qbox"
+	"github.com/qiniu/api.v7/storage"
 	"github.com/satori/go.uuid"
-	"qiniupkg.com/api.v7/kodo"
 )
 
-var bucket *kodo.Bucket
+var m *storage.BucketManager
 
-func newBucket() (*kodo.Bucket, error) {
-	ak := config.GetHttpConfig().AccessKey
-	sk := config.GetHttpConfig().SecretKey
-	b := config.GetHttpConfig().BucketName
-	if ak == "" || sk == "" || b == "" {
-		return nil, errors.New("qiniu config error")
+func newBucket() (*storage.BucketManager, error) {
+
+	mac := qbox.NewMac(config.GetHttpConfig().AccessKey, config.GetHttpConfig().SecretKey)
+	zone, err := storage.GetZone(config.GetHttpConfig().AccessKey, config.GetHttpConfig().BucketName)
+	if err != nil {
+		return nil, err
 	}
-	client := kodo.NewWithoutZone(&kodo.Config{
-		AccessKey: config.GetHttpConfig().AccessKey,
-		SecretKey: config.GetHttpConfig().SecretKey,
-	})
-	nBucket := client.Bucket(b)
-	return &nBucket, nil
+	cfg := &storage.Config{
+		Zone:          zone,
+		UseHTTPS:      false,
+		UseCdnDomains: false,
+	}
+
+	return storage.NewBucketManager(mac, cfg), nil
 }
 
 func UploadFromUrl(fetchURL string) (string, error) {
 	var err error
-	if bucket == nil {
-		bucket, err = newBucket()
+	if m == nil {
+		m, err = newBucket()
 		if err != nil {
 			return "", err
 		}
 	}
+
 	keyFetch := "spider/" + uuid.NewV4().String()
-	err = bucket.Fetch(nil, keyFetch, fetchURL)
+
+	_, err = m.Fetch(fetchURL, config.GetHttpConfig().BucketName, keyFetch)
 	if err != nil {
 		return "", err
 	}
