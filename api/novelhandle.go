@@ -1,4 +1,4 @@
-package httpserv
+package api
 
 import (
 	"fmt"
