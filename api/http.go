@@ -1,9 +1,8 @@
-package httpserv
+package api
 
 import (
 	"net/http"
 	_ "net/http/pprof"
-	"time"
 
 	"git.oschina.net/cnjack/novel-spider/config"
 	"github.com/cnjack/echo-binder"
@@ -11,11 +10,7 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
-var (
-	startTime time.Time = time.Now()
-)
-
-func Http() {
+func Start() {
 	e := echo.New()
 	go func() {
 		http.ListenAndServe(":6060", nil)
@@ -34,8 +29,4 @@ func Http() {
 	if err := e.Start(port); err != nil {
 		e.Logger.Fatal(err.Error())
 	}
-}
-
-func init() {
-	ReloadStatus()
 }

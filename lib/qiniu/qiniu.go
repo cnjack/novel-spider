@@ -1,4 +1,4 @@
-package tool
+package qiniu
 
 import (
 	"git.oschina.net/cnjack/novel-spider/config"
@@ -10,7 +10,6 @@ import (
 var m *storage.BucketManager
 
 func newBucket() (*storage.BucketManager, error) {
-
 	mac := qbox.NewMac(config.GetHttpConfig().AccessKey, config.GetHttpConfig().SecretKey)
 	zone, err := storage.GetZone(config.GetHttpConfig().AccessKey, config.GetHttpConfig().BucketName)
 	if err != nil {
@@ -40,5 +39,6 @@ func UploadFromUrl(fetchURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return config.GetHttpConfig().BucketUrl + keyFetch, nil
 }

@@ -1,9 +1,8 @@
-package httpserv
+package api
 
 import (
+	"encoding/json"
 	"net/http"
-
-	json "github.com/mailru/easyjson"
 )
 
 //easyjson:json
