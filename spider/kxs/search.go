@@ -1,4 +1,4 @@
-package spider
+package kxs
 
 import (
 	"errors"
@@ -7,25 +7,26 @@ import (
 	"sync"
 
 	"git.oschina.net/cnjack/downloader"
+	"git.oschina.net/cnjack/novel-spider/spider"
 	"github.com/PuerkitoBio/goquery"
 )
 
-type SnwxSearch struct {
+type Search struct {
 	NovelName string
 	Data      interface{}
 }
 
-func (s *SnwxSearch) Name() string {
-	return "snwx.com"
+func (s *Search) Name() string {
+	return "00kxs.com"
 }
 
-func (s *SnwxSearch) Match(name string) bool {
+func (s *Search) Match(name string) bool {
 	s.NovelName = name
 	return true
 }
 
-func (s *SnwxSearch) Gain() (interface{}, error) {
-	u, _ := url.Parse(fmt.Sprintf("http://zhannei.baidu.com/cse/search?q=%s&click=1&s=5516249222499057291&nsid=", s.NovelName))
+func (s *Search) Gain() (interface{}, error) {
+	u, _ := url.Parse(fmt.Sprintf("http://zhannei.baidu.com/cse/search?s=13422763785683251531&q=%s", s.NovelName))
 	d := downloader.NewHttpDownloaderFromUrl(u).Download()
 	if err := d.Error(); err != nil {
 		return "", err
@@ -34,17 +35,17 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 	if err != nil {
 		return "", err
 	}
-	var searchs = []*Search{}
+	var searchs = []*spider.Search{}
 	var wg = sync.WaitGroup{}
-	doc.Find(".result").Each(func(i int, selection *goquery.Selection) {
+	doc.Find(".result-list").Each(func(i int, selection *goquery.Selection) {
 		var b bool
-		d := selection.Find(".c-title a")
-		search := Search{}
+		d := selection.Find(".result-item-title a")
+		search := spider.Search{}
 		from, b := d.Attr("href")
 		if !b {
 			return
 		}
-		filter := &SnwxNovel{WithOutChapters: true}
+		filter := &Novel{WithOutChapters: true}
 		if !filter.Match(from) {
 			return
 		}
@@ -61,7 +62,7 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 			if err != nil {
 				return
 			}
-			novel := n.(Novel)
+			novel := n.(spider.Novel)
 			search.Novel = &novel
 		}()
 		searchs = append(searchs, &search)
@@ -70,7 +71,7 @@ func (s *SnwxSearch) Gain() (interface{}, error) {
 	if searchs == nil || len(searchs) == 0 {
 		return nil, errors.New("nothing search")
 	}
-	out := make([]*Search, 0)
+	out := make([]*spider.Search, 0)
 	mark := make(map[string]bool)
 	for _, v := range searchs {
 		if _, ok := mark[v.Novel.From]; !ok {
