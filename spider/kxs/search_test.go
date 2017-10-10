@@ -1,22 +1,23 @@
-package spider_test
+package kxs_test
 
 import (
 	"testing"
 
 	"git.oschina.net/cnjack/novel-spider/spider"
+	"git.oschina.net/cnjack/novel-spider/spider/kxs"
 	"github.com/stretchr/testify/assert"
 )
 
-const testSearch = "校园绝品狂徒"
+const testSearch = "大主宰"
 
 func TestSnwxSearch_Match(t *testing.T) {
-	s := spider.SnwxSearch{}
+	s := kxs.Search{}
 	b := s.Match(testSearch)
 	assert.Equal(t, true, b)
 }
 
 func TestSnwxSearch_Gain(t *testing.T) {
-	s := spider.SnwxSearch{}
+	s := kxs.Search{}
 	b := s.Match(testSearch)
 	searchs, err := s.Gain()
 
@@ -25,9 +26,8 @@ func TestSnwxSearch_Gain(t *testing.T) {
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
 		assert.NotNil(t, searchs)
-		assert.Equal(t, "http://www.snwx.com/book/0/381/", searchsStruct[0].From)
-		assert.Equal(t, "校园绝品狂徒", searchsStruct[0].Novel.Title)
-		assert.Equal(t, "连载中", searchsStruct[0].Novel.Status)
+		assert.Equal(t, "http://www.00kxs.com/html/2/2125/", searchsStruct[0].From)
+		assert.Equal(t, "大主宰", searchsStruct[0].Novel.Title)
 	}
 
 }

@@ -1,4 +1,4 @@
-package spider
+package snwx
 
 import (
 	"net/url"
@@ -6,9 +6,10 @@ import (
 
 	"git.oschina.net/cnjack/downloader"
 	"github.com/PuerkitoBio/goquery"
+	"git.oschina.net/cnjack/novel-spider/spider"
 )
 
-type SnwxNovel struct {
+type Novel struct {
 	Url             *url.URL
 	BookID          string
 	StyleMap        *map[string]string
@@ -16,11 +17,11 @@ type SnwxNovel struct {
 	Data            interface{}
 }
 
-func (s *SnwxNovel) Name() string {
+func (s *Novel) Name() string {
 	return "snwx8.com"
 }
 
-func (s *SnwxNovel) Match(urlString string) bool {
+func (s *Novel) Match(urlString string) bool {
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return false
@@ -69,7 +70,7 @@ func (s *SnwxNovel) Match(urlString string) bool {
 	return false
 }
 
-func (snwx *SnwxNovel) Gain() (interface{}, error) {
+func (snwx *Novel) Gain() (interface{}, error) {
 	u, _ := url.Parse("http://www.snwx8.com/book/" + snwx.BookID + "/")
 	d := downloader.NewHttpDownloaderFromUrl(u).Download()
 	if err := d.Error(); err != nil {
@@ -79,7 +80,7 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 	if err != nil {
 		return "", err
 	}
-	var novel Novel
+	var novel spider.Novel
 	novel.Title = doc.Find("div .infotitle h1").Text()
 	novel.Cover, _ = doc.Find("#fmimg img").Attr("src")
 	if novel.Cover == "/modules/article/images/nocover.jpg" {
@@ -116,7 +117,7 @@ func (snwx *SnwxNovel) Gain() (interface{}, error) {
 
 	if !snwx.WithOutChapters {
 		doc.Find("div#list dl dd").Each(func(i int, s *goquery.Selection) {
-			cp := &Chapter{}
+			cp := &spider.Chapter{}
 			cp.Title = s.Find("a").Text()
 			cp.Index = uint(i)
 			from, b := s.Find("a").Attr("href")

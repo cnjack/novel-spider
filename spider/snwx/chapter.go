@@ -1,4 +1,4 @@
-package spider
+package snwx
 
 import (
 	"net/url"
@@ -7,16 +7,16 @@ import (
 	"git.oschina.net/cnjack/downloader"
 )
 
-type SnwxChapter struct {
+type Chapter struct {
 	Url  *url.URL
 	Data interface{}
 }
 
-func (s *SnwxChapter) Name() string {
+func (s *Chapter) Name() string {
 	return "snwx.com"
 }
 
-func (s *SnwxChapter) Match(urlString string) bool {
+func (s *Chapter) Match(urlString string) bool {
 	u, err := url.Parse(urlString)
 	s.Url = u
 	if err != nil {
@@ -37,7 +37,7 @@ func (s *SnwxChapter) Match(urlString string) bool {
 	return false
 }
 
-func (s *SnwxChapter) Gain() (interface{}, error) {
+func (s *Chapter) Gain() (interface{}, error) {
 	d := downloader.NewHttpDownloaderFromUrl(s.Url).Download()
 	if err := d.Error(); err != nil {
 		return "", err

@@ -6,6 +6,7 @@ import (
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"git.oschina.net/cnjack/novel-spider/spider"
+	"git.oschina.net/cnjack/novel-spider/spider/snwx"
 	"github.com/labstack/echo"
 )
 
@@ -56,7 +57,7 @@ func postSearchRemote(c echo.Context) error {
 		return ParamError
 	}
 	searchs := []spider.Spider{
-		&spider.SnwxSearch{},
+		&snwx.Search{},
 	}
 	var data = []*spider.Search{}
 	for _, s := range searchs {
@@ -97,7 +98,7 @@ func postNovelTask(c echo.Context) error {
 		return ParamError
 	}
 	searchs := []spider.Spider{
-		&spider.SnwxNovel{},
+		&snwx.Novel{},
 	}
 	match := false
 	for _, s := range searchs {

@@ -7,6 +7,7 @@ import (
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
+	"git.oschina.net/cnjack/novel-spider/spider/snwx"
 	"git.oschina.net/cnjack/novel-spider/spider"
 )
 
@@ -146,7 +147,7 @@ func getChapter(c echo.Context) error {
 
 	if chapter.Data == "" {
 		searchs := []spider.Spider{
-			&spider.SnwxChapter{},
+			&snwx.Chapter{},
 		}
 		for _,s := range searchs {
 			if s.Match(chapter.Url) {
