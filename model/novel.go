@@ -13,8 +13,7 @@ type Novel struct {
 	gorm.Model
 	Title        string      `sql:"title" json:"title"`
 	Auth         string      `sql:"auth" json:"auth"`
-	Style        string      `sql:"-" json:"style"`
-	TagID        int         `sql:"tag_id" json:"tag_id"`
+	Style        string      `sql:"style" json:"style"`
 	Status       NovelStatus `sql:"status" json:"status"`
 	Cover        string      `sql:"cover" json:"cover"`
 	Introduction string      `sql:"introduction" gorm:"type:text" json:"intrduction"`
@@ -71,15 +70,6 @@ func (n *Novel) Add(db *gorm.DB) error {
 	return db.Create(n).Error
 }
 
-func (user *Novel) BeforeCreate(scope *gorm.Scope) error {
-	return nil
-}
-
-func CountNovel() (count int, err error) {
-	err = db.Model(&Novel{}).Count(&count).Error
-	return
-}
-
 func FirstNovelByID(db *gorm.DB, id uint) (n *Novel, err error) {
 	n = &Novel{}
 	if err = db.Model(n).Where("id = ?", id).First(n).Error; err != nil {
@@ -122,14 +112,22 @@ func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel, err error) {
 	return
 }
 
-func FindNovelsWithStyle(db *gorm.DB, styleID int, op *PageOption) (ns []Novel, err error) {
+func FindNovelsWithStyle(db *gorm.DB, style string, op *PageOption) (ns []Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
 	}
-	if err = db.Model(&Novel{}).Where("tag_id = ?", styleID).Order("id " + op.Sort).Limit(op.Count).Offset(op.Page * op.Count).Find(&ns).Error; err != nil {
+	if err = db.Model(&Novel{}).Where("tag_id LIKE '%" + style + "%'").Order("id " + op.Sort).Limit(op.Count).Offset(op.Page * op.Count).Find(&ns).Error; err != nil {
 		return nil, err
 	}
 	return
+}
+
+func FirstChapterByID(db *gorm.DB, id uint) ([]*NovelChapter, error) {
+	n := &Novel{}
+	if err := db.Model(&Novel{}).Select([]string{"chapters"}).Where("id = ?", id).Limit(1).Find(n).Error; err != nil {
+		return nil, err
+	}
+	return n.ChapterTodata()
 }
 
 type NovelData struct {
@@ -141,7 +139,7 @@ type NovelData struct {
 	Status       NovelStatus     `json:"status"`
 	Cover        string          `json:"cover"`
 	Introduction string          `json:"introduction"`
-	Chapter      *[]NovelChapter `json:"chapters"`
+	Chapter      []*NovelChapter `json:"chapters"`
 	Url          string          `json:"from"`
 }
 
@@ -173,17 +171,16 @@ func (n *Novel) Todata(more bool) *NovelData {
 type NovelChapter struct {
 	Title     string `json:"title"`
 	Index     uint   `json:"index"`
-	ChapterID uint   `json:"chapter_id"`
 	Url       string `json:"url"`
 }
 
-func (n *Novel) ChapterTodata() (*[]NovelChapter, error) {
-	novelChapters := []NovelChapter{}
+func (n *Novel) ChapterTodata() ([]*NovelChapter, error) {
+	novelChapters := make([]*NovelChapter, 0)
 	if n.Chapter != "" {
 		err := json.Unmarshal([]byte(n.Chapter), &novelChapters)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return &novelChapters, nil
+	return novelChapters, nil
 }

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"git.oschina.net/cnjack/downloader"
-	"github.com/PuerkitoBio/goquery"
 	"git.oschina.net/cnjack/novel-spider/spider"
+	"github.com/PuerkitoBio/goquery"
 )
 
 type Novel struct {
@@ -27,8 +27,7 @@ func (s *Novel) Match(urlString string) bool {
 		return false
 	}
 	s.Url = u
-	if u.Host != "www.snwx.com" {
-
+	if u.Host != "www.snwx.com" && u.Host != "www.snwx8.com" {
 		return false
 	}
 	path := strings.TrimRight(u.Path, ".html")
@@ -101,14 +100,7 @@ func (snwx *Novel) Gain() (interface{}, error) {
 			novel.Status = sss
 		}
 	})
-	if snwx.StyleMap != nil {
-		style, ok := (*snwx.StyleMap)[novel.Style]
-		if ok {
-			novel.Style = style
-		} else {
-			novel.Style = "其他"
-		}
-	}
+	novel.Style = strings.Replace(novel.Style, "小说", "", -1)
 	introString, err := doc.Find(".intro").Html()
 	if err != nil {
 		return nil, err

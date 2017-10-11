@@ -13,7 +13,7 @@ type Chapter struct {
 }
 
 func (s *Chapter) Name() string {
-	return "snwx.com"
+	return "snwx8.com"
 }
 
 func (s *Chapter) Match(urlString string) bool {
@@ -22,7 +22,7 @@ func (s *Chapter) Match(urlString string) bool {
 	if err != nil {
 		return false
 	}
-	if u.Host != "www.snwx.com" {
+	if u.Host != "www.snwx.com" && u.Host != "www.snwx8.com" {
 		return false
 	}
 	path := strings.TrimRight(u.Path, ".html")

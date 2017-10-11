@@ -2,13 +2,12 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"git.oschina.net/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
 )
 
-func getNovels(c echo.Context) error {
+func GetNovels(c echo.Context) error {
 	db, err := model.MustGetDB()
 	if err != nil {
 		return ServerError
@@ -22,20 +21,8 @@ func getNovels(c echo.Context) error {
 		return RecodeNotFound
 	}
 	var data = []*model.NovelData{}
-	tags, err := model.GetTags(db)
 	if err != nil {
 		return ServerError
-	}
-	for k, v := range novels {
-		for _, vv := range *tags {
-			if vv.ID == v.TagID {
-				novels[k].Style = vv.TagName
-				break
-			}
-		}
-		if novels[k].Style == "" {
-			novels[k].Style = "其他"
-		}
 	}
 	for _, v := range novels {
 		data = append(data, v.Todata(false))
@@ -55,43 +42,28 @@ func getNovels(c echo.Context) error {
 	})
 }
 
-func getStyles(c echo.Context) error {
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
-	tags, err := model.GetTags(db)
-	if err != nil {
-		return ServerError
-	}
+func GetStyles(c echo.Context) error {
+	tags := []string{}
 	return c.JSON(http.StatusOK, struct {
-		Code int           `json:"code"`
-		Data *[]model.Tags `json:"data"`
+		Code int      `json:"code"`
+		Data []string `json:"data"`
 	}{
 		Code: 0,
 		Data: tags,
 	})
 }
 
-func getStyleNovels(c echo.Context) error {
-	styleString := c.Param("style")
-	styleID, err := strconv.Atoi(styleString)
-	if err != nil {
-		return ParamError
-	}
-	if styleID < 0 {
+func GetStyleNovels(c echo.Context) error {
+	style := c.Param("style")
+	if len(style) < 0 {
 		return ParamError
 	}
 	db, err := model.MustGetDB()
 	if err != nil {
 		return ServerError
 	}
-	tag, err := model.FirstTagsByID(db, styleID)
-	if err != nil {
-		return ServerError
-	}
 	op := c.Get(PageOptionKey).(*model.PageOption)
-	novels, err := model.FindNovelsWithStyle(db, tag.ID, op)
+	novels, err := model.FindNovelsWithStyle(db, style, op)
 	if err != nil {
 		return ServerError
 	}
@@ -99,21 +71,6 @@ func getStyleNovels(c echo.Context) error {
 		return RecodeNotFound
 	}
 	var data = []*model.NovelData{}
-	tags, err := model.GetTags(db)
-	if err != nil {
-		return ServerError
-	}
-	for k, v := range novels {
-		for _, vv := range *tags {
-			if vv.ID == v.TagID {
-				novels[k].Style = vv.TagName
-				break
-			}
-		}
-		if novels[k].Style == "" {
-			novels[k].Style = "其他"
-		}
-	}
 	for _, v := range novels {
 		data = append(data, v.Todata(false))
 	}

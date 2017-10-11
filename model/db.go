@@ -46,14 +46,6 @@ func InitDB() error {
 		tx.Rollback()
 		return err
 	}
-	if err := tx.CreateTable(&Chapter{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.CreateTable(&Task{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
 	return tx.Commit().Error
 }
 
