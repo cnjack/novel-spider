@@ -19,9 +19,26 @@ func Start() {
 	e.Use(middleware.Logger())
 	e.Use(ErrorHandle)
 	e.Use(binder.BindBinder(e))
-	v1 := e.Group("v1")
-	WarpRouter(v1)
-	SpiderWarpRouter(v1)
+
+	{
+		v1 := e.Group("v1")
+		v1.GET("/novel/:id", GetNovelDetails)
+		v1.DELETE("/novel/:id", DeleteNovel)
+		v1.GET("/novel/:id/chapters", GetNovelChapters)
+
+		v1.GET("/novels", GetNovels, ParseParam)
+		v1.GET("/novels/style/:style", GetStyleNovels, ParseParam)
+
+		//TODO 废弃
+		v1.GET("/styles", GetStyles)
+
+		v1.POST("/search/remote", PostSearchRemote)
+		v1.POST("/search/local", PostSearchLocal, ParseParam)
+
+		v1.GET("/spider/chapter/:url", GetSpiderNovelChapters)
+		v1.GET("/spider/novel/:url", GetSpiderNovel)
+	}
+
 	port := config.GetHttpConfig().Port
 	if err := e.Start(port); err != nil {
 		e.Logger.Fatal(err.Error())

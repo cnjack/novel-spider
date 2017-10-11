@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func getSpiderNovelChapters(c echo.Context) error {
+func GetSpiderNovelChapters(c echo.Context) error {
 	urlString := c.Param("url")
 	urlString, err := url.QueryUnescape(urlString)
 	if err != nil {
@@ -39,7 +39,7 @@ func getSpiderNovelChapters(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
-func getSpiderNovel(c echo.Context) error {
+func GetSpiderNovel(c echo.Context) error {
 	urlString := c.Param("url")
 	urlString, err := url.QueryUnescape(urlString)
 	if err != nil {
