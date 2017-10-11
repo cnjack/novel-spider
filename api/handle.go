@@ -16,3 +16,8 @@ func WarpRouter(g *echo.Group) {
 	g.GET("/novel/:id/chapters", getNovelChapters)
 	g.GET("/chapter/:id", getChapter)
 }
+
+func SpiderWarpRouter(g *echo.Group) {
+	g.GET("/spider/chapter/:url", getSpiderNovelChapters)
+	g.GET("/spider/novel/:url", getSpiderNovel)
+}
