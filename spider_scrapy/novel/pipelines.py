@@ -6,7 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 import json
-import MySQLdb
+import pymysql.cursors
 from twisted.enterprise import adbapi
 
 
@@ -16,39 +16,37 @@ class NovelPipeline(object):
 
     def process_item(self, item, spider):
         line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        self.file.write(line)
+        print(line)
+        # self.file.write(line.encode())
         return item
 
 
 class MysqlPipeline(object):
-    def __init__(self, db_pool):
-        self.db_pool = db_pool
+    def __init__(self, db_conn):
+        self.db_conn = db_conn
         pass
 
     @classmethod
     def from_settings(cls, settings):
-        db_params = dict(
-            host=settings['MYSQL_HOST'],
-            db=settings['MYSQL_DB_NAME'],
-            user=settings['MYSQL_USER'],
-            passwd=settings['MYSQL_PASSWORD'],
-            charset='utf8',
-            cursorclass=MySQLdb.cursors.DictCursor,
-            use_unicode=False,
-        )
-        db_pool = adbapi.ConnectionPool('MySQLdb', **db_params)
-        return cls(db_pool)
+        db_conn = pymysql.connect(host=settings['MYSQL_HOST'],
+                                     user=settings['MYSQL_USER'],
+                                     password=settings['MYSQL_PASSWORD'],
+                                     db=settings['MYSQL_DB_NAME'],
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
+        return cls(db_conn)
 
-    def _handle_error(self, failue, item, spider):
-        print failue
-
-    def _conditional_insert(self, tx, item):
-        sql = "insert into novel(name,url) values(%s,%s)"
+    def _conditional_insert(self, db_conn, item):
+        sql = "insert into `novel`(`name`, `url`) values(%s, %s)"
         params = (item["name"], item["url"])
-        tx.execute(sql, params)
+        try:
+            with db_conn.cursor() as cursor:
+                cursor.execute(sql, params)
+            db_conn.commit()
+        finally:
+            db_conn.close()
 
     def process_item(self, item, spider):
-        query = self.db_pool.runInteraction(self._conditional_insert, item)  # 调用插入的方法
-        query.addErrback(self._handle_error, item, spider)  # 调用异常处理方法
+        self._conditional_insert(self.db_conn, item)
         return item
         pass
