@@ -39,14 +39,12 @@ func Connect() (*gorm.DB, error) {
 	return db, nil
 }
 
-func InitDB() error {
-	tx := db.Begin()
-	tx.LogMode(true)
-	if err := tx.CreateTable(&Novel{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	return tx.Commit().Error
+func InitDB() {
+	db.LogMode(true)
+	db.CreateTable(&Novel{})
+	db.Model(&Novel{}).AddIndex("idx_style", "style")
+	db.Model(&Novel{}).AddIndex("idx_title", "title")
+	db.Model(&Novel{}).AddIndex("idx_auth", "auth")
 }
 
 func init() {

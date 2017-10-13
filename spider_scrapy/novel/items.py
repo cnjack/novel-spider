@@ -9,7 +9,7 @@ import scrapy
 
 
 class NovelItem(scrapy.Item):
-    name = scrapy.Field()
+    title = scrapy.Field()
     url = scrapy.Field()
     cover = scrapy.Field()
     auth = scrapy.Field()

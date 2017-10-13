@@ -11,31 +11,14 @@ import (
 
 type Novel struct {
 	gorm.Model
-	Title        string      `sql:"title" json:"title"`
-	Auth         string      `sql:"auth" json:"auth"`
-	Style        string      `sql:"style" json:"style"`
-	Status       NovelStatus `sql:"status" json:"status"`
-	Cover        string      `sql:"cover" json:"cover"`
-	Introduction string      `sql:"introduction" gorm:"type:text" json:"intrduction"`
-	Chapter      string      `sql:"chapter" gorm:"type:longtext" json:"-"`
-	Url          string      `sql:"url" json:"from"`
-}
-
-type NovelStatus uint8
-
-const (
-	NovelSerializing NovelStatus = iota
-	NovelCompleted
-)
-
-func String2NovelStatus(statusString string) NovelStatus {
-	if statusString == "连载中" {
-		return NovelSerializing
-	}
-	if statusString == "已完成" {
-		return NovelCompleted
-	}
-	return NovelCompleted
+	Title        string `sql:"title" json:"title"`
+	Auth         string `sql:"auth" json:"auth"`
+	Style        string `sql:"style" json:"style"`
+	Status       string `sql:"status" json:"status"`
+	Cover        string `sql:"cover" json:"cover"`
+	Introduction string `sql:"introduction" gorm:"type:text" json:"intrduction"`
+	Chapter      string `sql:"chapter" gorm:"type:longtext" json:"-"`
+	Url          string `sql:"url" json:"from"`
 }
 
 type SearchNovel struct {
@@ -54,16 +37,6 @@ func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) (*[]Se
 		return nil, err
 	}
 	return &ns, nil
-}
-
-func (s NovelStatus) Tostring() string {
-	switch s {
-	case NovelSerializing:
-		return "连载中"
-	case NovelCompleted:
-		return "已完成"
-	}
-	return "未知"
 }
 
 func (n *Novel) Add(db *gorm.DB) error {
@@ -136,7 +109,7 @@ type NovelData struct {
 	Title        string          `json:"title"`
 	Auth         string          `json:"auth"`
 	Style        string          `json:"style"`
-	Status       NovelStatus     `json:"status"`
+	Status       string          `json:"status"`
 	Cover        string          `json:"cover"`
 	Introduction string          `json:"introduction"`
 	Chapter      []*NovelChapter `json:"chapters"`
@@ -169,9 +142,9 @@ func (n *Novel) Todata(more bool) *NovelData {
 }
 
 type NovelChapter struct {
-	Title     string `json:"title"`
-	Index     uint   `json:"index"`
-	Url       string `json:"url"`
+	Title string `json:"title"`
+	Index uint   `json:"index"`
+	Url   string `json:"url"`
 }
 
 func (n *Novel) ChapterTodata() ([]*NovelChapter, error) {
