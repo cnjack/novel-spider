@@ -9,7 +9,7 @@ def get_label_value(old_str):
         return ''
     index = 0
     if index == 0:
-        index = old_str.decode().find("：")
+        index = old_str.find("：")
     if index == 0:
-        index = old_str.decode().find(":")
+        index = old_str.find(":")
     return old_str[index + 1:]

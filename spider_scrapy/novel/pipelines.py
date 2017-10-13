@@ -16,8 +16,8 @@ class NovelPipeline(object):
 
     def process_item(self, item, spider):
         line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        print(line)
-        # self.file.write(line.encode())
+        #print(line)
+        self.file.write(line.encode())
         return item
 
 
