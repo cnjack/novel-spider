@@ -1,51 +1,48 @@
 package config
 
 import (
-	"github.com/Unknwon/goconfig"
+	"io/ioutil"
+	"log"
+
+	"github.com/go-yaml/yaml"
 )
 
-var ConfigPath = "./config.ini"
-
-var config *goconfig.ConfigFile
+var config = &Config{}
 
 type HttpConfig struct {
-	Port string
+	Port string `yaml:"port"`
 }
 
 type MysqlConfig struct {
-	DSN string
+	DSN string `yaml:"dsn"`
 }
 
-var (
-	h = &HttpConfig{}
-	m = &MysqlConfig{}
-)
-
-func GetHttpConfig() *HttpConfig {
-	return h
+type RedisConfig struct {
+	Addr     string `yaml:"addr"`
+	Password string `yaml:"password"`
+	DB       int    `yaml:"db"`
 }
 
-func GetMysqlConfig() *MysqlConfig {
-	return m
+type Config struct {
+	HttpConfig  HttpConfig  `yaml:"http"`
+	RedisConfig RedisConfig `yaml:"redis"`
+	MysqlConfig MysqlConfig `yaml:"mysql"`
 }
 
-func load() {
-	var err error
-	h.Port, err = config.GetValue("http", "port")
+func load(configPath string) {
+	file, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		h.Port = ":1314"
+		log.Panic(err)
 	}
-	m.DSN, err = config.GetValue("mysql", "dsn")
-	if err != nil {
-		m.DSN = "root:root@tcp(127.0.0.1:3306)/novel?charset=utf8&parseTime=True&loc=Local"
+	if err = yaml.Unmarshal(file, config); err != nil {
+		log.Panic(err)
 	}
+}
+
+func GetConfig() Config {
+	return *config
 }
 
 func init() {
-	var err error
-	config, err = goconfig.LoadConfigFile(ConfigPath)
-	if err != nil {
-		config = &goconfig.ConfigFile{}
-	}
-	load()
+	load("./config.yaml")
 }
