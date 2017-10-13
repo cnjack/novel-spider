@@ -23,10 +23,7 @@ func PostSearchLocal(c echo.Context) error {
 	if postSearchParam.Title == "" {
 		return ParamError
 	}
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
+	db := model.MustGetDB()
 	novels, err := model.SearchByTitleOrAuth(db, postSearchParam.Title, postSearchParam.Title, op)
 	if err != nil {
 		return ServerError

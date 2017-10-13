@@ -8,10 +8,7 @@ import (
 )
 
 func GetNovels(c echo.Context) error {
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
+	db := model.MustGetDB()
 	op := c.Get(PageOptionKey).(*model.PageOption)
 	novels, err := model.FindNovels(db, op)
 	if err != nil {
@@ -43,7 +40,11 @@ func GetNovels(c echo.Context) error {
 }
 
 func GetStyles(c echo.Context) error {
-	tags := []string{}
+	db := model.MustGetDB()
+	tags, err := model.GetStyle(db)
+	if err != nil {
+		return ServerError
+	}
 	return c.JSON(http.StatusOK, struct {
 		Code int      `json:"code"`
 		Data []string `json:"data"`
@@ -58,10 +59,7 @@ func GetStyleNovels(c echo.Context) error {
 	if len(style) < 0 {
 		return ParamError
 	}
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
+	db := model.MustGetDB()
 	op := c.Get(PageOptionKey).(*model.PageOption)
 	novels, err := model.FindNovelsWithStyle(db, style, op)
 	if err != nil {
