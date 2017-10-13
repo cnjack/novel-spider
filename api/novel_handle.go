@@ -14,10 +14,7 @@ func GetNovelDetails(c echo.Context) error {
 	if err != nil || id == 0 {
 		return ParamError
 	}
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
+	db := model.MustGetDB()
 	novel, err := model.FirstNovelByID(db, uint(id))
 	if err != nil {
 		return ServerError
@@ -45,10 +42,7 @@ func DeleteNovel(c echo.Context) error {
 	if err != nil || id == 0 {
 		return ParamError
 	}
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
+	db := model.MustGetDB()
 	novel, err := model.FirstNovelByID(db, uint(id))
 	if err != nil {
 		return ServerError
@@ -92,10 +86,7 @@ func GetNovelChapters(c echo.Context) error {
 	if err != nil || id == 0 {
 		return ParamError
 	}
-	db, err := model.MustGetDB()
-	if err != nil {
-		return ServerError
-	}
+	db := model.MustGetDB()
 	chapters, err := model.FirstChapterByID(db, uint(id))
 	if err != nil {
 		return ServerError

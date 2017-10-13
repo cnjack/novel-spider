@@ -29,7 +29,6 @@ func Start() {
 		v1.GET("/novels", GetNovels, ParseParam)
 		v1.GET("/novels/style/:style", GetStyleNovels, ParseParam)
 
-		//TODO 废弃
 		v1.GET("/styles", GetStyles)
 
 		v1.POST("/search/remote", PostSearchRemote)

@@ -22,11 +22,8 @@ var defaultPageOption = &PageOption{
 	Sort:  "desc",
 }
 
-func MustGetDB() (*gorm.DB, error) {
-	if db != nil {
-		return db, nil
-	}
-	return Connect()
+func MustGetDB() *gorm.DB {
+	return db
 }
 
 func Connect() (*gorm.DB, error) {

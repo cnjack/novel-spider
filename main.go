@@ -11,7 +11,7 @@ import (
 func init() {
 	log.SetOutput(os.Stdout)
 
-	db, _ := model.MustGetDB()
+	db := model.MustGetDB()
 	db.LogMode(true)
 	if err := db.CreateTable(&model.Novel{}).Error; err != nil {
 		log.Println(db)
