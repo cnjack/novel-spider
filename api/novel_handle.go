@@ -29,13 +29,6 @@ func GetNovelDetails(c echo.Context) error {
 	if novel == nil {
 		return RecodeNotFound
 	}
-	chapters, err := novel.ChapterTodata()
-	if err != nil {
-		return ServerError
-	}
-	if len(chapters) == 0 {
-		return ServerError
-	}
 	return c.JSON(http.StatusOK, struct {
 		Code     int              `json:"code"`
 		Data     *model.NovelData `json:"data"`

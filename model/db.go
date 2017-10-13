@@ -32,7 +32,7 @@ func MustGetDB() (*gorm.DB, error) {
 func Connect() (*gorm.DB, error) {
 	var err error
 
-	db, err = gorm.Open("mysql", config.GetMysqlConfig().DSN)
+	db, err = gorm.Open("mysql", config.GetConfig().MysqlConfig.DSN)
 	if err != nil {
 		return nil, err
 	}

@@ -35,11 +35,10 @@ func Start() {
 		v1.POST("/search/remote", PostSearchRemote)
 		v1.POST("/search/local", PostSearchLocal, ParseParam)
 
-		v1.GET("/spider/chapter/:url", GetSpiderNovelChapters)
-		v1.GET("/spider/novel/:url", GetSpiderNovel)
+		v1.GET("/chapter/:url", GetChapter)
 	}
 
-	port := config.GetHttpConfig().Port
+	port := config.GetConfig().HttpConfig.Port
 	if err := e.Start(port); err != nil {
 		e.Logger.Fatal(err.Error())
 	}
