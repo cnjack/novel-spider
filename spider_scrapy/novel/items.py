@@ -16,5 +16,4 @@ class NovelItem(scrapy.Item):
     style = scrapy.Field()
     intro = scrapy.Field()
     status = scrapy.Field()
-    chapters = scrapy.Field()
     pass

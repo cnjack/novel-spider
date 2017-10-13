@@ -35,9 +35,8 @@ class MysqlPipeline(object):
         return cls(db_conn)
 
     def _conditional_insert(self, db_conn, item):
-        sql = "INSERT INTO `novels`(title, url, style, auth, status, cover, introduction, chapter, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, now(), now())"
-        chapter_str = json.dumps(item['chapters'], ensure_ascii=False)
-        params = (item["title"], item["url"], item["style"], item["auth"], item["status"], item["cover"], item['intro'], chapter_str)
+        sql = "INSERT INTO `novels`(title, url, style, auth, status, cover, introduction, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, now(), now())"
+        params = (item["title"], item["url"], item["style"], item["auth"], item["status"], item["cover"], item['intro'])
         try:
             with db_conn.cursor() as cursor:
                 cursor.execute(sql, params)

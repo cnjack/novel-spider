@@ -66,10 +66,4 @@ class NovelSpider(CrawlSpider):
             item['intro'] = re.compile(r'<[^>]+>', re.S).sub("", intro).strip()
         else:
             item['intro'] = ""
-        chapters = []
-        for index, link in enumerate(response.xpath(self.chapters)):
-            chapters.append({"url": item["url"] + link.xpath('@href').extract()[0],
-                             "index": index,
-                             "title": link.xpath('text()').extract()[0]})
-        item['chapters'] = chapters
         return item
