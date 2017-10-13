@@ -50,13 +50,13 @@ class NovelSpider(CrawlSpider):
             item['cover'] = ""
         style_label = response.xpath(self.style_xpath).extract()
         if len(style_label) > 0:
-            item['style'] = filter.get_label_value(style_label[0])
+            item['style'] = filter.get_label_value(style_label[0]).replace("小说", "")
         else:
             item['style'] = ""
 
         status_label = response.xpath(self.status_xpath).extract()
         if len(status_label) > 0:
-            item['status'] = filter.get_label_value(status_label[0]).replace("小说", "")
+            item['status'] = filter.get_label_value(status_label[0])
         else:
             item['status'] = ""
 
