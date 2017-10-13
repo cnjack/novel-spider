@@ -7,7 +7,6 @@
 
 import json
 import pymysql.cursors
-from twisted.enterprise import adbapi
 
 
 class NovelPipeline(object):
@@ -16,7 +15,6 @@ class NovelPipeline(object):
 
     def process_item(self, item, spider):
         line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        #print(line)
         self.file.write(line.encode())
         return item
 
@@ -37,14 +35,16 @@ class MysqlPipeline(object):
         return cls(db_conn)
 
     def _conditional_insert(self, db_conn, item):
-        sql = "insert into `novel`(`name`, `url`) values(%s, %s)"
-        params = (item["name"], item["url"])
+        sql = "INSERT INTO `novels`(title, url, style, auth, status, cover, introduction, chapter, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, now(), now())"
+        chapter_str = json.dumps(item['chapters'], ensure_ascii=False)
+        params = (item["title"], item["url"], item["style"], item["auth"], item["status"], item["cover"], item['intro'], chapter_str)
         try:
             with db_conn.cursor() as cursor:
                 cursor.execute(sql, params)
             db_conn.commit()
         finally:
-            db_conn.close()
+            pass
+            # db_conn.close()
 
     def process_item(self, item, spider):
         self._conditional_insert(self.db_conn, item)

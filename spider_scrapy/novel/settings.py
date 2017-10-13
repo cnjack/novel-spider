@@ -15,8 +15,8 @@ SPIDER_MODULES = ['novel.spiders']
 NEWSPIDER_MODULE = 'novel.spiders'
 
 ITEM_PIPELINES = {
-    'novel.pipelines.NovelPipeline': 300,
-    # 'novel.pipelines.MysqlPipeline': 300,
+    # 'novel.pipelines.NovelPipeline': 300,
+    'novel.pipelines.MysqlPipeline': 300,
 }
 
 LOG_LEVEL = 'ERROR'

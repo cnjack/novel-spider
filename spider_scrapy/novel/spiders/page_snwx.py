@@ -22,7 +22,7 @@ class NovelSpider(CrawlSpider):
         Rule(LinkExtractor(allow=(r'book/[0-9]+/[0-9]+'),deny="\.html"), callback='parse_item'),
     )
 
-    name_xpath = './/div[@class="infotitle"]/h1/text()'
+    title_xpath = './/div[@class="infotitle"]/h1/text()'
     auth_xpath = './/div[@class="infotitle"]/i[1]/text()'
     cover_xpath = '//div[@id="fmimg"]/img/@src'
     style_xpath = '//div[@class="infotitle"]/i[2]/text()'
@@ -33,11 +33,11 @@ class NovelSpider(CrawlSpider):
     def parse_item(self, response):
         item = NovelItem()
         item["url"] = response.url
-        name = response.xpath(self.name_xpath).extract()
-        if len(name) > 0:
-            item["name"] = name[0]
+        title = response.xpath(self.title_xpath).extract()
+        if len(title) > 0:
+            item["title"] = title[0]
         else:
-            item["name"] = ""
+            item["title"] = ""
         auth_label = response.xpath(self.auth_xpath).extract()
         if len(auth_label) > 0:
             item['auth'] = filter.get_label_value(auth_label[0])
@@ -66,4 +66,10 @@ class NovelSpider(CrawlSpider):
             item['intro'] = re.compile(r'<[^>]+>', re.S).sub("", intro).strip()
         else:
             item['intro'] = ""
+        chapters = []
+        for index, link in enumerate(response.xpath(self.chapters)):
+            chapters.append({"url": item["url"] + link.xpath('@href').extract()[0],
+                             "index": index,
+                             "title": link.xpath('text()').extract()[0]})
+        item['chapters'] = chapters
         return item

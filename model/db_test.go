@@ -7,8 +7,5 @@ import (
 )
 
 func TestInitDB(t *testing.T) {
-	err := model.InitDB()
-	if err != nil {
-		t.Error(err)
-	}
+	model.InitDB()
 }
