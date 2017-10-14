@@ -32,19 +32,24 @@ type SearchNovel struct {
 	Auth  string `sql:"auth" json:"auth"`
 }
 
+var styles []string
+
 func GetStyle(db *gorm.DB) ([]string, error) {
+	if len(styles) != 0 {
+		return styles, nil
+	}
 	novels := make([]*Novel, 0)
 	err := db.Model(&Novel{}).Select([]string{"style"}).Group("style").Find(&novels).Error
 	if err != nil {
 		return nil, err
 	}
-	tags := make([]string, 0)
+	styles = make([]string, 0)
 	for _, v := range novels {
 		if v.Style != "" {
-			tags = append(tags, v.Style)
+			styles = append(styles, v.Style)
 		}
 	}
-	return tags, nil
+	return styles, nil
 }
 
 func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) (*[]SearchNovel, error) {
