@@ -213,7 +213,35 @@ func (n *Novel) GetChapter() ([]*NovelChapter, error) {
 }
 
 func GetNovelFromUrl(url string) (*Novel, error) {
-	return nil, nil
+	novel := &Novel{}
+	var novelSpider spider.Spider
+	for _, v := range []spider.Spider{
+		&snwx.Novel{},
+		&kxs.Novel{},
+	} {
+		if v.Match(url) {
+			novelSpider = v
+			break
+		}
+	}
+	if novelSpider != nil {
+		novelSrc, err := novelSpider.Gain()
+		if err != nil {
+			return nil, err
+		}
+		if novelSrc != nil {
+			novel.Url = url
+			novel.Style = novelSrc.(spider.Novel).Style
+			novel.Title = novelSrc.(spider.Novel).Title
+			novel.Cover = novelSrc.(spider.Novel).Cover
+			novel.Status = novelSrc.(spider.Novel).Status
+			novel.Auth = novelSrc.(spider.Novel).Auth
+			novel.Introduction = novelSrc.(spider.Novel).Introduction
+		}
+
+	}
+	err := db.Model(&Novel{}).Save(novel).Error
+	return novel, err
 }
 
 func GetChapter(url string) (string, error) {

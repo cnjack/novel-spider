@@ -16,6 +16,7 @@ func init() {
 	if err := db.CreateTable(&model.Novel{}).Error; err != nil {
 		log.Println(db)
 	}
+	db.LogMode(false)
 }
 
 func main() {
