@@ -15,12 +15,12 @@ you can build web(single web app) or app(cordova) from [novel-mobile](https://gi
 ### how to run
 
 ```
-go get -u git.oschina.net/cnjack/novel-spider
-go build git.oschina.net/cnjack/novel-spider
-cp $GOPATH/src/git.oschina.net/cnjack/novel-spider/config.yaml .
+go get -u gitee.com/cnjack/novel-spider
+go build gitee.com/cnjack/novel-spider
+cp $GOPATH/src/gitee.com/cnjack/novel-spider/config.yaml .
 edit config.yaml
 (linux)
-cp $GOPATH/src/git.oschina.net/cnjack/novel-spider/control .
+cp $GOPATH/src/gitee.com/cnjack/novel-spider/control .
 mkdir var
 ./control start
 (win)

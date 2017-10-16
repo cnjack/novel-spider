@@ -2,9 +2,10 @@ package api
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
 
-	"git.oschina.net/cnjack/novel-spider/model"
+	"gitee.com/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
 )
 
@@ -25,6 +26,41 @@ func GetNovelDetails(c echo.Context) error {
 
 	if novel == nil {
 		return RecodeNotFound
+	}
+	return c.JSON(http.StatusOK, struct {
+		Code     int              `json:"code"`
+		Data     *model.NovelData `json:"data"`
+		FirstCid uint             `json:"first_cid"`
+	}{
+		Code: 0,
+		Data: novel.Todata(false),
+	})
+}
+
+func GetNovelDetailsFromUrl(c echo.Context) error {
+	urlString := c.Param("url")
+	urlString, err := url.QueryUnescape(urlString)
+	if err != nil {
+		return ParamError
+	}
+	if _, err := url.Parse(urlString); err != nil {
+		return ParamError
+	}
+	db := model.MustGetDB()
+	novel, err := model.FirstNovelByUrl(db, urlString)
+	if err != nil && novel != nil {
+		return c.JSON(http.StatusOK, struct {
+			Code     int              `json:"code"`
+			Data     *model.NovelData `json:"data"`
+			FirstCid uint             `json:"first_cid"`
+		}{
+			Code: 0,
+			Data: novel.Todata(false),
+		})
+	}
+	novel, err = model.GetNovelFromUrl(urlString)
+	if err != nil {
+		return ServerError
 	}
 	return c.JSON(http.StatusOK, struct {
 		Code     int              `json:"code"`

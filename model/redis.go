@@ -3,7 +3,7 @@ package model
 import (
 	"log"
 
-	"git.oschina.net/cnjack/novel-spider/config"
+	"gitee.com/cnjack/novel-spider/config"
 	"github.com/go-redis/redis"
 )
 

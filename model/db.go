@@ -1,7 +1,7 @@
 package model
 
 import (
-	"git.oschina.net/cnjack/novel-spider/config"
+	"gitee.com/cnjack/novel-spider/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )

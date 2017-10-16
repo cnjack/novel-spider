@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"git.oschina.net/cnjack/novel-spider/api"
-	"git.oschina.net/cnjack/novel-spider/model"
+	"gitee.com/cnjack/novel-spider/api"
+	"gitee.com/cnjack/novel-spider/model"
 )
 
 func init() {

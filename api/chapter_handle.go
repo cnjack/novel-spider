@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"git.oschina.net/cnjack/novel-spider/model"
+	"gitee.com/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
 )
 
