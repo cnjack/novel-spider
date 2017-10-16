@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"git.oschina.net/cnjack/downloader"
+	"gitee.com/cnjack/downloader"
 )
 
 type Chapter struct {

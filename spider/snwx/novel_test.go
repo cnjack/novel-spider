@@ -3,9 +3,9 @@ package snwx_test
 import (
 	"testing"
 
-	"git.oschina.net/cnjack/novel-spider/spider/snwx"
+	"gitee.com/cnjack/novel-spider/spider/snwx"
 	"github.com/stretchr/testify/assert"
-	"git.oschina.net/cnjack/novel-spider/spider"
+	"gitee.com/cnjack/novel-spider/spider"
 )
 
 const testNovelUrl = "http://www.snwx8.com/book/0/760/"

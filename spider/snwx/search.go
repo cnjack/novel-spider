@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"sync"
 
-	"git.oschina.net/cnjack/downloader"
-	"git.oschina.net/cnjack/novel-spider/spider"
+	"gitee.com/cnjack/downloader"
+	"gitee.com/cnjack/novel-spider/spider"
 	"github.com/PuerkitoBio/goquery"
 )
 

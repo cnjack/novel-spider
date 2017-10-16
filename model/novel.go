@@ -8,9 +8,9 @@ import (
 	"net/url"
 	"time"
 
-	"git.oschina.net/cnjack/novel-spider/spider"
-	"git.oschina.net/cnjack/novel-spider/spider/kxs"
-	"git.oschina.net/cnjack/novel-spider/spider/snwx"
+	"gitee.com/cnjack/novel-spider/spider"
+	"gitee.com/cnjack/novel-spider/spider/kxs"
+	"gitee.com/cnjack/novel-spider/spider/snwx"
 	"github.com/jinzhu/gorm"
 )
 
@@ -52,8 +52,8 @@ func GetStyle(db *gorm.DB) ([]string, error) {
 	return styles, nil
 }
 
-func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) (*[]SearchNovel, error) {
-	var ns []SearchNovel
+func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) ([]*SearchNovel, error) {
+	var ns = make([]*SearchNovel, 0)
 	var err error
 	if op == nil {
 		op = defaultPageOption
@@ -61,7 +61,7 @@ func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) (*[]Se
 	if err = db.Table("novels").Where("title LIKE ? OR auth = ?", "%"+title+"%", auth).Select([]string{"title", "id", "auth"}).Limit(op.Count).Offset(op.Page * op.Count).Order("id desc").Find(&ns).Error; err != nil {
 		return nil, err
 	}
-	return &ns, nil
+	return ns, nil
 }
 
 func (n *Novel) Add(db *gorm.DB) error {
@@ -79,7 +79,18 @@ func FirstNovelByID(db *gorm.DB, id uint) (n *Novel, err error) {
 	return
 }
 
-func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel, err error) {
+func FirstNovelByUrl(db *gorm.DB, url string) (n *Novel, err error) {
+	n = &Novel{}
+	if err = db.Model(n).Where("url = ?", url).First(n).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return
+}
+
+func FindNovels(db *gorm.DB, op *PageOption) (ns []*Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
 	}
@@ -89,7 +100,7 @@ func FindNovels(db *gorm.DB, op *PageOption) (ns []Novel, err error) {
 	return
 }
 
-func FindNovelsWithStyle(db *gorm.DB, style string, op *PageOption) (ns []Novel, err error) {
+func FindNovelsWithStyle(db *gorm.DB, style string, op *PageOption) (ns []*Novel, err error) {
 	if op == nil {
 		op = defaultPageOption
 	}
@@ -199,6 +210,10 @@ func (n *Novel) GetChapter() ([]*NovelChapter, error) {
 		}
 	}
 	return novelChapters, nil
+}
+
+func GetNovelFromUrl(url string) (*Novel, error) {
+	return nil, nil
 }
 
 func GetChapter(url string) (string, error) {

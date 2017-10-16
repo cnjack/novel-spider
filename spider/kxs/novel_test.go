@@ -3,8 +3,8 @@ package kxs_test
 import (
 	"testing"
 
-	"git.oschina.net/cnjack/novel-spider/spider"
-	"git.oschina.net/cnjack/novel-spider/spider/kxs"
+	"gitee.com/cnjack/novel-spider/spider"
+	"gitee.com/cnjack/novel-spider/spider/kxs"
 	"github.com/stretchr/testify/assert"
 )
 

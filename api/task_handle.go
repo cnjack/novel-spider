@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
-	"git.oschina.net/cnjack/novel-spider/model"
-	"git.oschina.net/cnjack/novel-spider/spider"
-	"git.oschina.net/cnjack/novel-spider/spider/snwx"
+	"gitee.com/cnjack/novel-spider/model"
+	"gitee.com/cnjack/novel-spider/spider"
+	"gitee.com/cnjack/novel-spider/spider/snwx"
 	"github.com/labstack/echo"
 )
 
@@ -29,12 +29,12 @@ func PostSearchLocal(c echo.Context) error {
 		return ServerError
 	}
 	nextPage := 0
-	if len(*novels) >= op.Count {
+	if len(novels) >= op.Count {
 		nextPage = op.Page + 1
 	}
 	return c.JSON(http.StatusOK, struct {
 		Code int                  `json:"code"`
-		Data *[]model.SearchNovel `json:"data"`
+		Data []*model.SearchNovel `json:"data"`
 		Next int                  `json:"next"`
 	}{
 		Code: 0,

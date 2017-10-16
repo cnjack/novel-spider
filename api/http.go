@@ -3,7 +3,7 @@ package api
 import (
 	_ "net/http/pprof"
 
-	"git.oschina.net/cnjack/novel-spider/config"
+	"gitee.com/cnjack/novel-spider/config"
 	"github.com/cnjack/echo-binder"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -23,6 +23,7 @@ func Start() {
 	{
 		v1 := e.Group("v1")
 		v1.GET("/novel/:id", GetNovelDetails)
+		v1.GET("/novel/from_url/:url", GetNovelDetailsFromUrl)
 		v1.DELETE("/novel/:id", DeleteNovel)
 		v1.GET("/novel/:id/chapters", GetNovelChapters)
 
