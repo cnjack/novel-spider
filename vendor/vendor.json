@@ -94,10 +94,10 @@
 			"revisionTime": "2017-10-12T08:56:05Z"
 		},
 		{
-			"checksumSHA1": "c4id9KLO6q2M0iZ+kWKnMi2aRbg=",
+			"checksumSHA1": "VxmCO0vGnLx1B7bo6yz6/InMj5E=",
 			"path": "github.com/go-sql-driver/mysql",
-			"revision": "eb92a8dc628ca52501ddae1ed90eca7514f215bf",
-			"revisionTime": "2017-10-12T08:31:18Z"
+			"revision": "fae512fbd064ec5e786eeccddf7e3c0eeec7c5d9",
+			"revisionTime": "2017-10-16T20:44:03Z"
 		},
 		{
 			"checksumSHA1": "w29v72jrTkc6UewSTLpotYUgAcM=",
@@ -212,29 +212,32 @@
 		{
 			"checksumSHA1": "9TH05dyfdsA0EJvxly42ms2ykeM=",
 			"path": "golang.org/x/crypto/acme",
-			"revision": "76eec36fa14229c4b25bb894c2d0e591527af429",
-			"revisionTime": "2017-09-27T17:19:09Z"
+			"revision": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3",
+			"revisionTime": "2017-09-30T17:45:11Z"
 		},
 		{
 			"checksumSHA1": "4z75fxISOgKOmbS/X+qcTCXdyCs=",
 			"path": "golang.org/x/crypto/acme/autocert",
-			"revision": "76eec36fa14229c4b25bb894c2d0e591527af429",
-			"revisionTime": "2017-09-27T17:19:09Z"
+			"revision": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3",
+			"revisionTime": "2017-09-30T17:45:11Z"
 		},
 		{
-			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
+			"checksumSHA1": "/PGQlVbw8jILX3tLQaYAg6bTAFI=",
 			"path": "golang.org/x/net/html",
-			"revision": ""
+			"revision": "1087133bc4af3073e18add999345c6ae75918503",
+			"revisionTime": "2017-10-13T01:45:07Z"
 		},
 		{
-			"checksumSHA1": "00eQaGynDYrv3tL+C7l9xH0IDZg=",
+			"checksumSHA1": "iWvOOLdDxvI4AVX6px6/HYBPeaQ=",
 			"path": "golang.org/x/net/html/atom",
-			"revision": ""
+			"revision": "1087133bc4af3073e18add999345c6ae75918503",
+			"revisionTime": "2017-10-13T01:45:07Z"
 		},
 		{
 			"checksumSHA1": "barUU39reQ7LdgYLA323hQ/UGy4=",
 			"path": "golang.org/x/net/html/charset",
-			"revision": ""
+			"revision": "1087133bc4af3073e18add999345c6ae75918503",
+			"revisionTime": "2017-10-13T01:45:07Z"
 		},
 		{
 			"checksumSHA1": "MBmecV6tS+vsAHgwPiGWSU3jBoc=",
