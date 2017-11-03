@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
 	"time"
 
 	"gitee.com/cnjack/novel-spider/spider"
@@ -132,12 +131,8 @@ type NovelData struct {
 }
 
 func (n *Novel) Todata(more bool) *NovelData {
-	cover, err := url.Parse(n.Cover)
-	coverStr := ""
-	if err != nil || cover.Host != "spider-img.nightc.com" {
-		coverStr = "http://spider-img.nightc.com/cover.jpg"
-	} else {
-		coverStr = cover.String()
+	if n.Cover == "" {
+		n.Cover = "http://spider-img.nightc.com/cover.jpg"
 	}
 	resp := NovelData{
 		ID:           n.ID,
@@ -147,7 +142,7 @@ func (n *Novel) Todata(more bool) *NovelData {
 		Style:        n.Style,
 		Status:       n.Status,
 		Introduction: n.Introduction,
-		Cover:        coverStr,
+		Cover:        n.Cover,
 		Url:          n.Url,
 	}
 	if more {
