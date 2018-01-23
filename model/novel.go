@@ -20,15 +20,20 @@ type Novel struct {
 	Style        string `sql:"style" json:"style"`
 	Status       string `sql:"status" json:"status"`
 	Cover        string `sql:"cover" json:"cover"`
-	Introduction string `sql:"introduction" gorm:"type:text" json:"intrduction"`
+	Introduction string `sql:"introduction" gorm:"type:text" json:"introduction"`
 	Chapter      string `sql:"-" json:"-"`
 	Url          string `sql:"url" json:"from"`
 }
 
 type SearchNovel struct {
-	ID    uint   `sql:"id" json:"id"`
-	Title string `sql:"title" json:"title"`
-	Auth  string `sql:"auth" json:"auth"`
+	ID           uint   `sql:"id" json:"id"`
+	Title        string `sql:"title" json:"title"`
+	Auth         string `sql:"auth" json:"auth"`
+	Cover        string `sql:"cover" json:"cover"`
+	Style        string `sql:"style" json:"style"`
+	Status       string `sql:"status" json:"status"`
+	Introduction string `sql:"introduction" gorm:"type:text" json:"introduction"`
+	Url          string `sql:"url" json:"from"`
 }
 
 var styles []string
@@ -57,7 +62,7 @@ func SearchByTitleOrAuth(db *gorm.DB, title, auth string, op *PageOption) ([]*Se
 	if op == nil {
 		op = defaultPageOption
 	}
-	if err = db.Table("novels").Where("title LIKE ? OR auth = ?", "%"+title+"%", auth).Select([]string{"title", "id", "auth"}).Limit(op.Count).Offset(op.Page * op.Count).Order("id desc").Find(&ns).Error; err != nil {
+	if err = db.Table("novels").Where("title LIKE ? OR auth = ?", "%"+title+"%", auth).Select([]string{"title", "id", "auth", "style", "cover", "status", "introduction", "url"}).Limit(op.Count).Offset(op.Page * op.Count).Order("id desc").Find(&ns).Error; err != nil {
 		return nil, err
 	}
 	return ns, nil
