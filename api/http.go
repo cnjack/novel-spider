@@ -36,6 +36,7 @@ func Start() {
 		v1.POST("/search/local", PostSearchLocal, ParseParam)
 
 		v1.GET("/chapter/:url", GetChapter)
+		v1.GET("/image_proxy/:url", GetImage)
 	}
 
 	port := config.GetConfig().HttpConfig.Port
