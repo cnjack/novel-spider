@@ -1,13 +1,18 @@
 package snwx
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/url"
+	"spider/downloader"
+	"spider/spider"
 	"sync"
 
-	"gitee.com/cnjack/downloader"
-	"gitee.com/cnjack/novel-spider/spider"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -26,7 +31,8 @@ func (s *Search) Match(name string) bool {
 }
 
 func (s *Search) Gain() (interface{}, error) {
-	u, _ := url.Parse(fmt.Sprintf("http://zhannei.baidu.com/cse/search?q=%s&click=1&s=5516249222499057291&nsid=", s.NovelName))
+	postNovelName, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(s.NovelName)), simplifiedchinese.GBK.NewEncoder()))
+	u, _ := url.Parse(fmt.Sprintf("https://www.snwx8.com/modules/article/search.php?searchkey=%s", url.QueryEscape(string(postNovelName))))
 	d := downloader.NewHttpDownloaderFromUrl(u).Download()
 	if err := d.Error(); err != nil {
 		return "", err
@@ -37,9 +43,9 @@ func (s *Search) Gain() (interface{}, error) {
 	}
 	var searchs = []*spider.Search{}
 	var wg = sync.WaitGroup{}
-	doc.Find(".result").Each(func(i int, selection *goquery.Selection) {
+	doc.Find("#newscontent ul li").Each(func(i int, selection *goquery.Selection) {
 		var b bool
-		d := selection.Find(".c-title a")
+		d := selection.Find(".s2 a")
 		search := spider.Search{}
 		from, b := d.Attr("href")
 		if !b {

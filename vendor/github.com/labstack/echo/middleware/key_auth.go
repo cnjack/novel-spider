@@ -72,7 +72,7 @@ func KeyAuthWithConfig(config KeyAuthConfig) echo.MiddlewareFunc {
 		config.KeyLookup = DefaultKeyAuthConfig.KeyLookup
 	}
 	if config.Validator == nil {
-		panic("echo: key-auth middleware requires a validator function")
+		panic("key-auth middleware requires a validator function")
 	}
 
 	// Initialize

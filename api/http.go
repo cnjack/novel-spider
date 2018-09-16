@@ -3,10 +3,10 @@ package api
 import (
 	_ "net/http/pprof"
 
-	"gitee.com/cnjack/novel-spider/config"
 	"github.com/cnjack/echo-binder"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"spider/config"
 )
 
 func Start() {

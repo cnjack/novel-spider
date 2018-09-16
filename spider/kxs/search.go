@@ -1,14 +1,20 @@
 package kxs
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
+	"io/ioutil"
+	"net/http"
 	"net/url"
+	"spider/spider"
 	"sync"
 
-	"gitee.com/cnjack/downloader"
-	"gitee.com/cnjack/novel-spider/spider"
+	"golang.org/x/text/transform"
+
+	"spider/downloader"
+
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 type Search struct {
@@ -26,8 +32,13 @@ func (s *Search) Match(name string) bool {
 }
 
 func (s *Search) Gain() (interface{}, error) {
-	u, _ := url.Parse(fmt.Sprintf("http://zhannei.baidu.com/cse/search?s=13422763785683251531&q=%s", s.NovelName))
-	d := downloader.NewHttpDownloaderFromUrl(u).Download()
+	postParams := url.Values{}
+	postNovelName, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(s.NovelName)), simplifiedchinese.GBK.NewEncoder()))
+	postParams.Set("searchkey", string(postNovelName))
+	postParams.Set("searchtype", "articlename")
+	req, _ := http.NewRequest(http.MethodPost, "http://www.00kxs.com/modules/article/search.php", bytes.NewBufferString(postParams.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	d := downloader.NewHttpDownloaderFromRequest(req).Download()
 	if err := d.Error(); err != nil {
 		return "", err
 	}
@@ -37,9 +48,9 @@ func (s *Search) Gain() (interface{}, error) {
 	}
 	var searchs = []*spider.Search{}
 	var wg = sync.WaitGroup{}
-	doc.Find(".result-list").Each(func(i int, selection *goquery.Selection) {
+	doc.Find("#nr").Each(func(i int, selection *goquery.Selection) {
 		var b bool
-		d := selection.Find(".result-item-title a")
+		d := selection.Find(".odd a")
 		search := spider.Search{}
 		from, b := d.Attr("href")
 		if !b {

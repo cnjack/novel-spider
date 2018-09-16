@@ -1,9 +1,9 @@
 package model
 
 import (
-	"gitee.com/cnjack/novel-spider/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"spider/config"
 )
 
 var db *gorm.DB

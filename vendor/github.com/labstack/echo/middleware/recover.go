@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/gommon/color"
 )
 
 type (
@@ -63,14 +64,17 @@ func RecoverWithConfig(config RecoverConfig) echo.MiddlewareFunc {
 
 			defer func() {
 				if r := recover(); r != nil {
-					err, ok := r.(error)
-					if !ok {
+					var err error
+					switch r := r.(type) {
+					case error:
+						err = r
+					default:
 						err = fmt.Errorf("%v", r)
 					}
 					stack := make([]byte, config.StackSize)
 					length := runtime.Stack(stack, !config.DisableStackAll)
 					if !config.DisablePrintStack {
-						c.Logger().Printf("[PANIC RECOVER] %v %s\n", err, stack[:length])
+						c.Logger().Printf("[%s] %s %s\n", color.Red("PANIC RECOVER"), err, stack[:length])
 					}
 					c.Error(err)
 				}

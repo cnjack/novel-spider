@@ -3,9 +3,10 @@ package snwx_test
 import (
 	"testing"
 
-	"gitee.com/cnjack/novel-spider/spider/snwx"
+	"spider/spider"
+	"spider/spider/snwx"
+
 	"github.com/stretchr/testify/assert"
-	"gitee.com/cnjack/novel-spider/spider"
 )
 
 const testSearch = "校园绝品狂徒"
@@ -26,7 +27,7 @@ func TestSnwxSearch_Gain(t *testing.T) {
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
 		assert.NotNil(t, searchs)
-		assert.Equal(t, "http://www.snwx.com/book/0/381/", searchsStruct[0].From)
+		assert.Equal(t, "https://www.snwx8.com/book/0/381/", searchsStruct[0].From)
 		assert.Equal(t, "校园绝品狂徒", searchsStruct[0].Novel.Title)
 		assert.Equal(t, "连载中", searchsStruct[0].Novel.Status)
 	}

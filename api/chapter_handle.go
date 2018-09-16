@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"gitee.com/cnjack/novel-spider/model"
-	"gitee.com/cnjack/novel-spider/spider"
 	"github.com/labstack/echo"
+	"spider/model"
+	"spider/spider"
 )
 
 func GetChapter(c echo.Context) error {

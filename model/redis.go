@@ -3,8 +3,8 @@ package model
 import (
 	"log"
 
-	"gitee.com/cnjack/novel-spider/config"
 	"github.com/go-redis/redis"
+	"spider/config"
 )
 
 var client *redis.Client

@@ -142,10 +142,6 @@ func ProxyWithConfig(config ProxyConfig) echo.MiddlewareFunc {
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
-			if config.Skipper(c) {
-				return next(c)
-			}
-
 			req := c.Request()
 			res := c.Response()
 			tgt := config.Balancer.Next()

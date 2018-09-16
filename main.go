@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"gitee.com/cnjack/novel-spider/api"
-	"gitee.com/cnjack/novel-spider/model"
+	"spider/api"
+	"spider/model"
 )
 
 func init() {
