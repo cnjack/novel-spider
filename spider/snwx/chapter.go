@@ -2,9 +2,8 @@ package snwx
 
 import (
 	"net/url"
+	"spider/downloader"
 	"strings"
-
-	"gitee.com/cnjack/downloader"
 )
 
 type Chapter struct {

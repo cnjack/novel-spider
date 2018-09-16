@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"gitee.com/cnjack/novel-spider/spider"
-	"gitee.com/cnjack/novel-spider/spider/kxs"
-	"gitee.com/cnjack/novel-spider/spider/snwx"
 	"github.com/jinzhu/gorm"
+	"spider/spider"
+	"spider/spider/kxs"
+	"spider/spider/snwx"
 )
 
 type Novel struct {

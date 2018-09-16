@@ -4,8 +4,9 @@ import (
 	"net/url"
 	"strings"
 
-	"gitee.com/cnjack/downloader"
-	"gitee.com/cnjack/novel-spider/spider"
+	"spider/downloader"
+	"spider/spider"
+
 	"github.com/PuerkitoBio/goquery"
 )
 

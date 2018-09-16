@@ -6,8 +6,8 @@ import (
 
 	"net/http"
 
-	"gitee.com/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
+	"spider/model"
 )
 
 const PageOptionKey = `Page-Option-Key`

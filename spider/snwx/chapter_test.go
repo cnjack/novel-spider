@@ -1,13 +1,13 @@
 package snwx_test
 
 import (
+	"spider/spider/snwx"
 	"testing"
 
-	"gitee.com/cnjack/novel-spider/spider/snwx"
 	"github.com/stretchr/testify/assert"
 )
 
-const testChapterUrl = "http://www.snwx.com/book/0/381/155205.html"
+const testChapterUrl = "https://www.snwx8.com/book/0/381/155205.html"
 
 func TestSnwxChapter_Match(t *testing.T) {
 	s := snwx.Chapter{}

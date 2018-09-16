@@ -3,8 +3,8 @@ package kxs_test
 import (
 	"testing"
 
-	"gitee.com/cnjack/novel-spider/spider/kxs"
 	"github.com/stretchr/testify/assert"
+	"spider/spider/kxs"
 )
 
 const testChapterUrl = "http://www.00kxs.com/html/26/26058/11909975.html"

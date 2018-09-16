@@ -3,8 +3,9 @@ package kxs_test
 import (
 	"testing"
 
-	"gitee.com/cnjack/novel-spider/spider"
-	"gitee.com/cnjack/novel-spider/spider/kxs"
+	"spider/spider"
+	"spider/spider/kxs"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,10 +26,10 @@ func TestSnwxNovel_Gain(t *testing.T) {
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
 		assert.NotNil(t, novel)
-		assert.Equal(t, "萧瑾瑜", novelStruct.Auth)
+		assert.Equal(t, "你狗", novelStruct.Auth)
 		assert.Equal(t, "http://www.00kxs.com/img/26/26058/26058s.jpg", novelStruct.Cover)
-		assert.Equal(t, "天骄战纪", novelStruct.Title)
-		assert.Equal(t, "玄幻魔法", novelStruct.Style)
+		assert.Equal(t, "极品仙帝重生都市", novelStruct.Title)
+		assert.Equal(t, "都市言情", novelStruct.Style)
 		assert.Equal(t, "", novelStruct.Status)
 		assert.NotEmpty(t, novelStruct.Introduction)
 		assert.NotNil(t, novelStruct.Chapter)

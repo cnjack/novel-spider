@@ -1,12 +1,11 @@
 package api
 
 import (
-	"net/http"
-
-	"gitee.com/cnjack/novel-spider/model"
-	"gitee.com/cnjack/novel-spider/spider"
-	"gitee.com/cnjack/novel-spider/spider/snwx"
 	"github.com/labstack/echo"
+	"net/http"
+	"spider/model"
+	"spider/spider"
+	"spider/spider/snwx"
 )
 
 type PostSearchParam struct {
@@ -43,7 +42,6 @@ func PostSearchLocal(c echo.Context) error {
 	})
 }
 
-//TODO add task
 func PostSearchRemote(c echo.Context) error {
 	postSearchParam := &PostSearchParam{}
 	err := c.Bind(postSearchParam)

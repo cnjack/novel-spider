@@ -3,8 +3,9 @@ package kxs_test
 import (
 	"testing"
 
-	"gitee.com/cnjack/novel-spider/spider"
-	"gitee.com/cnjack/novel-spider/spider/kxs"
+	"spider/spider"
+	"spider/spider/kxs"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,7 +27,7 @@ func TestSnwxSearch_Gain(t *testing.T) {
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
 		assert.NotNil(t, searchs)
-		assert.Equal(t, "http://www.00kxs.com/html/2/2125/", searchsStruct[0].From)
+		assert.Equal(t, "http://www.00kxs.com/html/0/59/", searchsStruct[0].From)
 		assert.Equal(t, "大主宰", searchsStruct[0].Novel.Title)
 	}
 

@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"gitee.com/cnjack/novel-spider/model"
 	"github.com/labstack/echo"
+	"spider/model"
 )
 
 func GetNovelDetails(c echo.Context) error {
