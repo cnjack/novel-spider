@@ -73,7 +73,7 @@ func (d *HttpDownloader) Error() error {
 func (d *HttpDownloader) download() (resp *http.Response, err error) {
 	client := &http.Client{
 		// set the timeout 5s
-		Timeout: 5 * time.Second,
+		Timeout: 10 * time.Second,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},

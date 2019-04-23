@@ -2,9 +2,9 @@ package downloader_test
 
 import (
 	"net/url"
+	"spider/downloader"
 	"testing"
 
-	"git.oschina.net/cnjack/downloader"
 	"github.com/stretchr/testify/assert"
 )
 
