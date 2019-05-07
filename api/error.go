@@ -28,6 +28,9 @@ func NewNightcErr(httpCode, code int, data interface{}) *NightcErr {
 var (
 	ParamError     = NewNightcErr(http.StatusForbidden, 1, "param err")
 	ServerError    = NewNightcErr(http.StatusInternalServerError, 1, "server err")
+	SpiderError    = NewNightcErr(http.StatusInternalServerError, 1, "spider err")
+	GainError      = NewNightcErr(http.StatusInternalServerError, 1, "gain err")
+	GainEmptyError = NewNightcErr(http.StatusInternalServerError, 1, "gain empty err")
 	RecodeNotFound = NewNightcErr(http.StatusNotFound, 1, "recode not found")
 	TaskIsRepeated = NewNightcErr(http.StatusForbidden, 1, "task is repeated")
 )

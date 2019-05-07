@@ -135,20 +135,23 @@ func AddNovel(c echo.Context) error {
 	searchers := []spider.Spider{
 		&snwx.Novel{},
 	}
-	novelData := new(spider.Novel)
+	novelData := spider.Novel{}
 	var ok bool
 	for _, s := range searchers {
 		if s.Match(postAddNovelParam.URL) {
 			sRespInterface, err := s.Gain()
 			if err != nil {
-				return err
+				return GainError
 			}
-			novelData, ok = sRespInterface.(*spider.Novel)
+			novelData, ok = sRespInterface.(spider.Novel)
 			if !ok {
-				return ServerError
+				return SpiderError
 			}
 			break
 		}
+	}
+	if novelData.From == "" {
+		return GainEmptyError
 	}
 	novel := &model.Novel{
 		Title:        novelData.Title,
