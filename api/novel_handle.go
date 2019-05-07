@@ -3,10 +3,13 @@ package api
 import (
 	"net/http"
 	"net/url"
+	"spider/spider"
+	"spider/spider/snwx"
 	"strconv"
 
-	"github.com/labstack/echo"
 	"spider/model"
+
+	"github.com/labstack/echo"
 )
 
 func GetNovelDetails(c echo.Context) error {
@@ -113,6 +116,61 @@ func DeleteNovel(c echo.Context) error {
 	}{
 		Code: 0,
 		Data: "ok",
+	})
+}
+
+type PostAddNovelParam struct {
+	URL string `json:"url"`
+}
+
+func AddNovel(c echo.Context) error {
+	postAddNovelParam := &PostAddNovelParam{}
+	err := c.Bind(postAddNovelParam)
+	if err != nil {
+		return ParamError
+	}
+	if postAddNovelParam.URL == "" {
+		return ParamError
+	}
+	searchers := []spider.Spider{
+		&snwx.Novel{},
+	}
+	novelData := new(spider.Novel)
+	var ok bool
+	for _, s := range searchers {
+		if s.Match(postAddNovelParam.URL) {
+			sRespInterface, err := s.Gain()
+			if err != nil {
+				return err
+			}
+			novelData, ok = sRespInterface.(*spider.Novel)
+			if !ok {
+				return ServerError
+			}
+			break
+		}
+	}
+	novel := &model.Novel{
+		Title:        novelData.Title,
+		Auth:         novelData.Auth,
+		Style:        novelData.Style,
+		Status:       novelData.Status,
+		Cover:        novelData.Cover,
+		Introduction: novelData.Introduction,
+		Url:          novelData.From,
+	}
+	db := model.MustGetDB()
+	err = novel.Add(db)
+	if err != nil {
+		return ServerError
+	}
+	return c.JSON(http.StatusOK, struct {
+		Code     int              `json:"code"`
+		Data     *model.NovelData `json:"data"`
+		FirstCid uint             `json:"first_cid"`
+	}{
+		Code: 0,
+		Data: novel.Todata(false),
 	})
 }
 

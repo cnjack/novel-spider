@@ -3,10 +3,11 @@ package api
 import (
 	_ "net/http/pprof"
 
-	"github.com/cnjack/echo-binder"
+	"spider/config"
+
+	binder "github.com/cnjack/echo-binder"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"spider/config"
 )
 
 func Start() {
@@ -34,6 +35,7 @@ func Start() {
 
 		v1.POST("/search/remote", PostSearchRemote)
 		v1.POST("/search/local", PostSearchLocal, ParseParam)
+		v1.POST("/novel/add", AddNovel)
 
 		v1.GET("/chapter/:url", GetChapter)
 		v1.GET("/image_proxy/:url", GetImage)

@@ -1,11 +1,12 @@
 package api
 
 import (
-	"github.com/labstack/echo"
 	"net/http"
 	"spider/model"
 	"spider/spider"
 	"spider/spider/snwx"
+
+	"github.com/labstack/echo"
 )
 
 type PostSearchParam struct {
@@ -51,11 +52,11 @@ func PostSearchRemote(c echo.Context) error {
 	if postSearchParam.Title == "" {
 		return ParamError
 	}
-	searchs := []spider.Spider{
+	searchers := []spider.Spider{
 		&snwx.Search{},
 	}
 	var data = []*spider.Search{}
-	for _, s := range searchs {
+	for _, s := range searchers {
 		if s.Match(postSearchParam.Title) {
 			sRespInterface, err := s.Gain()
 			if err != nil {
