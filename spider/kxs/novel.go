@@ -94,7 +94,7 @@ func (snwx *Novel) Gain() (interface{}, error) {
 	novel.Introduction = introString
 
 	if !snwx.WithOutChapters {
-		doc.Find("div#list ul li").Each(func(i int, s *goquery.Selection) {
+		doc.Find("div#list ul.chapters:last-child li").Each(func(i int, s *goquery.Selection) {
 			cp := &spider.Chapter{}
 			cp.Title = s.Find("a").Text()
 			cp.Index = uint(i)
@@ -102,7 +102,7 @@ func (snwx *Novel) Gain() (interface{}, error) {
 			if !b {
 				return
 			}
-			cp.From = u.String() + from
+			cp.From = "http://www.00kxs.com" + from
 			novel.Chapter = append(novel.Chapter, cp)
 		})
 	}

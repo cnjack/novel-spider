@@ -3,11 +3,12 @@ package kxs_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"spider/spider/kxs"
+
+	"github.com/stretchr/testify/assert"
 )
 
-const testChapterUrl = "http://www.00kxs.com/html/26/26058/11909975.html"
+const testChapterUrl = "http://www.00kxs.com/html/23/23770/"
 
 func TestSnwxChapter_Match(t *testing.T) {
 	s := kxs.Chapter{}

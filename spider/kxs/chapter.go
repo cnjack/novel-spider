@@ -22,7 +22,7 @@ func (s *Chapter) Match(urlString string) bool {
 	if err != nil {
 		return false
 	}
-	if u.Host != "www.00kxs.com" {
+	if u.Host != "00kxs.com" {
 		return false
 	}
 	path := strings.TrimRight(u.Path, ".html")
