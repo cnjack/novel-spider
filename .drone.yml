@@ -16,6 +16,7 @@ steps:
       password:
         from_secret: docker_pass
       repo: cnjackhack/spider
+      force_tag: true
       tags:
         - latest
-        - ${DRONE_COMMIT_SHA:0:8}
+        - ${DRONE_COMMIT_BRANCH}_${DRONE_COMMIT_SHA:0:8}
