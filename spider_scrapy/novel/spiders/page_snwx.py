@@ -12,14 +12,14 @@ from novel.items import NovelItem
 class NovelSpider(CrawlSpider):
     name = "snwx"
     start_urls = [
-        "http://www.snwx8.com/toplastupdate/1.html"
+        "http://www.snwx3.com/toplastupdate/1.html"
     ]
 
-    allow_domains = ['www.snwx8.com', 'www.snwx.com']
+    allow_domains = ['www.snwx3.com']
 
     rules = (
         Rule(LinkExtractor(allow=(r'/toplastupdate/[0-9]+\.html'))),
-        Rule(LinkExtractor(allow=(r'book/[0-9]+/[0-9]+'),deny="\.html"), callback='parse_item'),
+        Rule(LinkExtractor(allow=(r'book/[0-9]+/[0-9]+/'),deny="\.html"), callback='parse_item'),
     )
 
     title_xpath = './/div[@class="infotitle"]/h1/text()'

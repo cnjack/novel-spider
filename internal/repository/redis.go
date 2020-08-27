@@ -1,15 +1,16 @@
-package model
+package repository
 
 import (
 	"log"
 
+	"spider/internal/config"
+
 	"github.com/go-redis/redis"
-	"spider/config"
 )
 
 var client *redis.Client
 
-func init() {
+func InitRedis() {
 	redisConf := config.GetConfig().RedisConfig
 	client = redis.NewClient(&redis.Options{
 		Addr:     redisConf.Addr,

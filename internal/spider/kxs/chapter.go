@@ -1,9 +1,10 @@
-package snwx
+package kxs
 
 import (
 	"net/url"
-	"spider/downloader"
 	"strings"
+
+	"spider/internal/downloader"
 )
 
 type Chapter struct {
@@ -12,7 +13,7 @@ type Chapter struct {
 }
 
 func (s *Chapter) Name() string {
-	return "snwx8.com"
+	return "00kxs.com"
 }
 
 func (s *Chapter) Match(urlString string) bool {
@@ -21,7 +22,7 @@ func (s *Chapter) Match(urlString string) bool {
 	if err != nil {
 		return false
 	}
-	if u.Host != "www.snwx.com" && u.Host != "www.snwx8.com" {
+	if strings.Index(u.Host, "00kxs.com") == -1 {
 		return false
 	}
 	path := strings.TrimRight(u.Path, ".html")
@@ -30,7 +31,7 @@ func (s *Chapter) Match(urlString string) bool {
 	if len(paths) != 4 {
 		return false
 	}
-	if paths[0] == "book" {
+	if paths[0] == "html" {
 		return true
 	}
 	return false
@@ -45,7 +46,7 @@ func (s *Chapter) Gain() (interface{}, error) {
 	if err != nil {
 		return "", err
 	}
-	html, err := doc.Find("div#BookText").Html()
+	html, err := doc.Find("div#content").Html()
 	if err != nil {
 		return "", nil
 	}

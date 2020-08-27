@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"strings"
 
-	"spider/downloader"
-	"spider/spider"
+	"spider/internal/downloader"
+	"spider/internal/spider"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -61,10 +61,7 @@ func (snwx *Novel) Gain() (interface{}, error) {
 	var novel spider.Novel
 	novel.Title = doc.Find("div #info h1").Text()
 	novel.Cover, _ = doc.Find("#fmimg img").Attr("src")
-	if novel.Cover == "/modules/article/images/nocover.jpg" {
-		novel.Cover = ""
-	}
-	novel.Cover = "http://www.00kxs.com" + novel.Cover
+	// novel.Cover = "http://www.00kxs.com" + novel.Cover
 	novel.From = u.String()
 	doc.Find("#info p").Each(func(i int, s *goquery.Selection) {
 		ss := strings.Split(s.Text(), "：")
@@ -94,9 +91,10 @@ func (snwx *Novel) Gain() (interface{}, error) {
 	novel.Introduction = introString
 
 	if !snwx.WithOutChapters {
-		doc.Find("div#list ul.chapters:last-child li").Each(func(i int, s *goquery.Selection) {
+		doc.Find("div#list li.chapter").Each(func(i int, s *goquery.Selection) {
 			cp := &spider.Chapter{}
 			cp.Title = s.Find("a").Text()
+
 			cp.Index = uint(i)
 			from, b := s.Find("a").Attr("href")
 			if !b {

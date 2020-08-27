@@ -1,23 +1,22 @@
-package kxs_test
+package snwx_test
 
 import (
+	"spider/internal/spider/snwx"
 	"testing"
-
-	"spider/spider/kxs"
 
 	"github.com/stretchr/testify/assert"
 )
 
-const testChapterUrl = "http://www.00kxs.com/html/23/23770/"
+const testChapterUrl = "https://www.snwx3.com/book/0/381/155205.html"
 
 func TestSnwxChapter_Match(t *testing.T) {
-	s := kxs.Chapter{}
+	s := snwx.Chapter{}
 	b := s.Match(testChapterUrl)
 	assert.Equal(t, true, b)
 }
 
 func TestSnwxChapter_Gain(t *testing.T) {
-	s := kxs.Chapter{}
+	s := snwx.Chapter{}
 	b := s.Match(testChapterUrl)
 	chapter, err := s.Gain()
 	chapterString, b2 := chapter.(string)
@@ -25,5 +24,6 @@ func TestSnwxChapter_Gain(t *testing.T) {
 		assert.Equal(t, true, b)
 		assert.Equal(t, true, b2)
 		assert.NotEmpty(t, chapterString)
+		t.Log(chapterString)
 	}
 }

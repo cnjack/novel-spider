@@ -3,11 +3,11 @@ package api
 import (
 	"net/http"
 	"net/url"
-	"spider/spider"
-	"spider/spider/snwx"
+	"spider/internal/spider"
+	"spider/internal/spider/snwx"
 	"strconv"
 
-	"spider/model"
+	"spider/internal/repository"
 
 	"github.com/labstack/echo"
 )
@@ -18,8 +18,8 @@ func GetNovelDetails(c echo.Context) error {
 	if err != nil || id == 0 {
 		return ParamError
 	}
-	db := model.MustGetDB()
-	novel, err := model.FirstNovelByID(db, uint(id))
+	db := repository.MustGetDB()
+	novel, err := repository.FirstNovelByID(db, uint(id))
 	if err != nil {
 		return ServerError
 	}
@@ -31,9 +31,9 @@ func GetNovelDetails(c echo.Context) error {
 		return RecodeNotFound
 	}
 	return c.JSON(http.StatusOK, struct {
-		Code     int              `json:"code"`
-		Data     *model.NovelData `json:"data"`
-		FirstCid uint             `json:"first_cid"`
+		Code     int                   `json:"code"`
+		Data     *repository.NovelData `json:"data"`
+		FirstCid uint                  `json:"first_cid"`
 	}{
 		Code: 0,
 		Data: novel.Todata(false),
@@ -49,26 +49,26 @@ func GetNovelDetailsFromUrl(c echo.Context) error {
 	if _, err := url.Parse(urlString); err != nil {
 		return ParamError
 	}
-	db := model.MustGetDB()
-	novel, err := model.FirstNovelByUrl(db, urlString)
+	db := repository.MustGetDB()
+	novel, err := repository.FirstNovelByUrl(db, urlString)
 	if err != nil && novel != nil {
 		return c.JSON(http.StatusOK, struct {
-			Code     int              `json:"code"`
-			Data     *model.NovelData `json:"data"`
-			FirstCid uint             `json:"first_cid"`
+			Code     int                   `json:"code"`
+			Data     *repository.NovelData `json:"data"`
+			FirstCid uint                  `json:"first_cid"`
 		}{
 			Code: 0,
 			Data: novel.Todata(false),
 		})
 	}
-	novel, err = model.GetNovelFromUrl(urlString)
+	novel, err = repository.GetNovelFromUrl(urlString)
 	if err != nil {
 		return ServerError
 	}
 	return c.JSON(http.StatusOK, struct {
-		Code     int              `json:"code"`
-		Data     *model.NovelData `json:"data"`
-		FirstCid uint             `json:"first_cid"`
+		Code     int                   `json:"code"`
+		Data     *repository.NovelData `json:"data"`
+		FirstCid uint                  `json:"first_cid"`
 	}{
 		Code: 0,
 		Data: novel.Todata(false),
@@ -81,8 +81,8 @@ func DeleteNovel(c echo.Context) error {
 	if err != nil || id == 0 {
 		return ParamError
 	}
-	db := model.MustGetDB()
-	novel, err := model.FirstNovelByID(db, uint(id))
+	db := repository.MustGetDB()
+	novel, err := repository.FirstNovelByID(db, uint(id))
 	if err != nil {
 		return ServerError
 	}
@@ -153,7 +153,7 @@ func AddNovel(c echo.Context) error {
 	if novelData.From == "" {
 		return GainEmptyError
 	}
-	novel := &model.Novel{
+	novel := &repository.Novel{
 		Title:        novelData.Title,
 		Auth:         novelData.Auth,
 		Style:        novelData.Style,
@@ -162,15 +162,15 @@ func AddNovel(c echo.Context) error {
 		Introduction: novelData.Introduction,
 		Url:          novelData.From,
 	}
-	db := model.MustGetDB()
+	db := repository.MustGetDB()
 	err = novel.Add(db)
 	if err != nil {
 		return ServerError
 	}
 	return c.JSON(http.StatusOK, struct {
-		Code     int              `json:"code"`
-		Data     *model.NovelData `json:"data"`
-		FirstCid uint             `json:"first_cid"`
+		Code     int                   `json:"code"`
+		Data     *repository.NovelData `json:"data"`
+		FirstCid uint                  `json:"first_cid"`
 	}{
 		Code: 0,
 		Data: novel.Todata(false),
@@ -183,8 +183,8 @@ func GetNovelChapters(c echo.Context) error {
 	if err != nil || id == 0 {
 		return ParamError
 	}
-	db := model.MustGetDB()
-	chapters, err := model.FirstChapterByID(db, uint(id))
+	db := repository.MustGetDB()
+	chapters, err := repository.FirstChapterByID(db, uint(id))
 	if err != nil {
 		return ServerError
 	}

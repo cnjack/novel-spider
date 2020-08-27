@@ -7,14 +7,14 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"spider/model"
+	"spider/internal/repository"
 )
 
 const PageOptionKey = `Page-Option-Key`
 
 func ParseParam(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		op := &model.PageOption{
+		op := &repository.PageOption{
 			Page:  0,
 			Count: 25,
 			All:   false,

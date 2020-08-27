@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"strings"
 
-	"spider/downloader"
-	"spider/spider"
+	"spider/internal/downloader"
+	"spider/internal/spider"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -19,7 +19,7 @@ type Novel struct {
 }
 
 func (s *Novel) Name() string {
-	return "snwx8.com"
+	return "snwx3.com"
 }
 
 func (s *Novel) Match(urlString string) bool {
@@ -28,7 +28,7 @@ func (s *Novel) Match(urlString string) bool {
 		return false
 	}
 	s.Url = u
-	if u.Host != "www.snwx.com" && u.Host != "www.snwx8.com" {
+	if u.Host != "www.snwx.com" && u.Host != "www.snwx3.com" {
 		return false
 	}
 	path := strings.TrimRight(u.Path, ".html")

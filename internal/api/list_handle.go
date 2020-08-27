@@ -4,20 +4,20 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"spider/model"
+	"spider/internal/repository"
 )
 
 func GetNovels(c echo.Context) error {
-	db := model.MustGetDB()
-	op := c.Get(PageOptionKey).(*model.PageOption)
-	novels, err := model.FindNovels(db, op)
+	db := repository.MustGetDB()
+	op := c.Get(PageOptionKey).(*repository.PageOption)
+	novels, err := repository.FindNovels(db, op)
 	if err != nil {
 		return ServerError
 	}
 	if novels == nil {
 		return RecodeNotFound
 	}
-	var data = []*model.NovelData{}
+	var data = []*repository.NovelData{}
 	if err != nil {
 		return ServerError
 	}
@@ -29,9 +29,9 @@ func GetNovels(c echo.Context) error {
 		nextPage = op.Page + 1
 	}
 	return c.JSON(http.StatusOK, struct {
-		Code int                `json:"code"`
-		Next int                `json:"next"`
-		Data []*model.NovelData `json:"data"`
+		Code int                     `json:"code"`
+		Next int                     `json:"next"`
+		Data []*repository.NovelData `json:"data"`
 	}{
 		Code: 0,
 		Next: nextPage,
@@ -40,8 +40,8 @@ func GetNovels(c echo.Context) error {
 }
 
 func GetStyles(c echo.Context) error {
-	db := model.MustGetDB()
-	tags, err := model.GetStyle(db)
+	db := repository.MustGetDB()
+	tags, err := repository.GetStyle(db)
 	if err != nil {
 		return ServerError
 	}
@@ -59,16 +59,16 @@ func GetStyleNovels(c echo.Context) error {
 	if len(style) < 0 {
 		return ParamError
 	}
-	db := model.MustGetDB()
-	op := c.Get(PageOptionKey).(*model.PageOption)
-	novels, err := model.FindNovelsWithStyle(db, style, op)
+	db := repository.MustGetDB()
+	op := c.Get(PageOptionKey).(*repository.PageOption)
+	novels, err := repository.FindNovelsWithStyle(db, style, op)
 	if err != nil {
 		return ServerError
 	}
 	if novels == nil {
 		return RecodeNotFound
 	}
-	var data = []*model.NovelData{}
+	var data = []*repository.NovelData{}
 	for _, v := range novels {
 		data = append(data, v.Todata(false))
 	}
@@ -77,9 +77,9 @@ func GetStyleNovels(c echo.Context) error {
 		nextPage = op.Page + 1
 	}
 	return c.JSON(http.StatusOK, struct {
-		Code int                `json:"code"`
-		Next int                `json:"next"`
-		Data []*model.NovelData `json:"data"`
+		Code int                     `json:"code"`
+		Next int                     `json:"next"`
+		Data []*repository.NovelData `json:"data"`
 	}{
 		Code: 0,
 		Next: nextPage,

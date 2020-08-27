@@ -2,7 +2,7 @@ package downloader_test
 
 import (
 	"net/url"
-	"spider/downloader"
+	"spider/internal/downloader"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -1,0 +1,10 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: build
+    image: golang:1.13
+    commands:
+      - go build cmd/main.go -o spider
+      - go test -v ./...

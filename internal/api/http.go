@@ -3,7 +3,7 @@ package api
 import (
 	_ "net/http/pprof"
 
-	"spider/config"
+	"spider/internal/config"
 
 	binder "github.com/cnjack/echo-binder"
 	"github.com/labstack/echo"
@@ -33,7 +33,6 @@ func Start() {
 
 		v1.GET("/styles", GetStyles)
 
-		v1.POST("/search/remote", PostSearchRemote)
 		v1.POST("/search/local", PostSearchLocal, ParseParam)
 		v1.POST("/novel/add", AddNovel)
 

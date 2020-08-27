@@ -43,6 +43,6 @@ func GetConfig() Config {
 	return *config
 }
 
-func init() {
+func Init() {
 	load("./config.yaml")
 }

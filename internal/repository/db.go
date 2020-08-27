@@ -1,9 +1,10 @@
-package model
+package repository
 
 import (
+	"spider/internal/config"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"spider/config"
 )
 
 var db *gorm.DB
@@ -26,7 +27,7 @@ func MustGetDB() *gorm.DB {
 	return db
 }
 
-func Connect() (*gorm.DB, error) {
+func InitDatabase() (*gorm.DB, error) {
 	var err error
 
 	db, err = gorm.Open("mysql", config.GetConfig().MysqlConfig.DSN)
@@ -42,11 +43,4 @@ func InitDB() {
 	db.Model(&Novel{}).AddIndex("idx_style", "style")
 	db.Model(&Novel{}).AddIndex("idx_title", "title")
 	db.Model(&Novel{}).AddIndex("idx_auth", "auth")
-}
-
-func init() {
-	_, err := Connect()
-	if err != nil {
-		panic(err)
-	}
 }

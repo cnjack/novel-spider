@@ -5,8 +5,8 @@ import (
 	"net/url"
 
 	"github.com/labstack/echo"
-	"spider/model"
-	"spider/spider"
+	"spider/internal/repository"
+	"spider/internal/spider"
 )
 
 func GetChapter(c echo.Context) error {
@@ -19,7 +19,7 @@ func GetChapter(c echo.Context) error {
 		return ParamError
 	}
 
-	chapter, err := model.GetChapter(urlString)
+	chapter, err := repository.GetChapter(urlString)
 	if err != nil {
 		return ServerError
 	}
@@ -35,7 +35,7 @@ func GetChapter(c echo.Context) error {
 	})
 }
 
-var imageSpider = spider.NewImageSpider(model.MustGetRedisClient())
+var imageSpider = spider.NewImageSpider(repository.MustGetRedisClient())
 
 func GetImage(c echo.Context) error {
 	urlString := c.Param("url")

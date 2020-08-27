@@ -1,4 +1,4 @@
-package model
+package repository
 
 import (
 	"crypto/md5"
@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"spider/spider"
-	"spider/spider/kxs"
-	"spider/spider/snwx"
+	"spider/internal/spider"
+	"spider/internal/spider/kxs"
+	"spider/internal/spider/snwx"
 )
 
 type Novel struct {
