@@ -71,7 +71,7 @@ func (s *Novel) Match(urlString string) bool {
 }
 
 func (snwx *Novel) Gain() (interface{}, error) {
-	u, _ := url.Parse("http://www.snwx8.com/book/" + snwx.BookID + "/")
+	u, _ := url.Parse("https://www.snwx3.com/book/" + snwx.BookID + "/")
 	d := downloader.NewHttpDownloaderFromUrl(u).Download()
 	if err := d.Error(); err != nil {
 		return "", err
