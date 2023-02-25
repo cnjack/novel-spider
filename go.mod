@@ -23,8 +23,8 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/valyala/fasttemplate v1.1.1 // indirect; direct
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	golang.org/x/text v0.3.3
+	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect; direct
