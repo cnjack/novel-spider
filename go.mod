@@ -18,13 +18,12 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect; direct
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect; direct
-	github.com/microcosm-cc/bluemonday v1.0.3 // indirect; direct
+	github.com/microcosm-cc/bluemonday v1.0.20 // indirect; direct
 	github.com/onsi/gomega v1.4.2 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/valyala/fasttemplate v1.1.1 // indirect; direct
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	golang.org/x/text v0.3.3
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect; direct
